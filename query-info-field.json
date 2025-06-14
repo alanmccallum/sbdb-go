@@ -1,0 +1,499 @@
+{
+  "signature": {
+    "source": "NASA/JPL SBDB (Small-Body DataBase) Query API",
+    "version": "1.0"
+  },
+  "info": {
+    "field": {
+      "phys_par": {
+        "list": [
+          {
+            "units": null,
+            "title": "H",
+            "description": "absolute magnitude parameter",
+            "name": "H"
+          },
+          {
+            "units": null,
+            "title": "G",
+            "description": "magnitude slope parameter (default is 0.15)",
+            "name": "G"
+          },
+          {
+            "units": null,
+            "name": "M1",
+            "description": "comet total magnitude parameter",
+            "title": "M1"
+          },
+          {
+            "title": "M2",
+            "description": "comet nuclear magnitude parameter",
+            "name": "M2",
+            "units": null
+          },
+          {
+            "units": null,
+            "name": "K1",
+            "description": "comet total magnitude slope parameter",
+            "title": "K1"
+          },
+          {
+            "title": "K2",
+            "description": "comet nuclear magnitude slope parameter",
+            "name": "K2",
+            "units": null
+          },
+          {
+            "title": "PC",
+            "description": "comet nuclear magnitude law - phase coefficient",
+            "name": "PC",
+            "units": null
+          },
+          {
+            "title": "diameter",
+            "description": "object diameter (from equivalent sphere)",
+            "name": "diameter",
+            "units": "km"
+          },
+          {
+            "units": "km",
+            "title": "extent",
+            "name": "extent",
+            "description": "object bi/tri-axial ellipsoid dimensions"
+          },
+          {
+            "name": "albedo",
+            "description": "geometric albedo",
+            "title": "albedo",
+            "units": null
+          },
+          {
+            "units": "h",
+            "title": "rot_per",
+            "description": "rotation period",
+            "name": "rot_per"
+          },
+          {
+            "name": "GM",
+            "description": "standard gravitational parameter: product of the mass (M) and gravitational constant (G)",
+            "title": "GM",
+            "units": "km^3/s^2"
+          },
+          {
+            "units": null,
+            "title": "B-V",
+            "name": "BV",
+            "description": "color index B-V magnitude difference"
+          },
+          {
+            "units": null,
+            "title": "U-B",
+            "description": "color index U-B magnitude difference",
+            "name": "UB"
+          },
+          {
+            "description": "color index I-R magnitude difference",
+            "name": "IR",
+            "title": "I-R",
+            "units": null
+          },
+          {
+            "name": "spec_B",
+            "description": "spectral taxonomic type",
+            "title": "spec. type",
+            "units": "SMASSII"
+          },
+          {
+            "title": "spec. type",
+            "description": "spectral taxonomic type",
+            "name": "spec_T",
+            "units": "Tholen"
+          },
+          {
+            "units": null,
+            "description": "1-sigma uncertainty in absolute magnitude H",
+            "name": "H_sigma",
+            "title": "H-sigma"
+          },
+          {
+            "units": "km",
+            "description": "1-sigma uncertainty in object diameter",
+            "name": "diameter_sigma",
+            "title": "diameter-sigma"
+          }
+        ],
+        "field_label": "Physical Parameter Fields"
+      },
+      "orbit": {
+        "field_label": "Orbit and Model Parameter Fields",
+        "list": [
+          {
+            "units": null,
+            "title": "orbit ID",
+            "description": "orbit solution ID",
+            "name": "orbit_id"
+          },
+          {
+            "units": "TDB",
+            "title": "epoch",
+            "name": "epoch",
+            "description": "epoch of osculation in Julian day form"
+          },
+          {
+            "units": "TDB",
+            "title": "epoch",
+            "name": "epoch_mjd",
+            "description": "epoch of osculation in modified Julian day form"
+          },
+          {
+            "units": "TDB",
+            "title": "epoch",
+            "description": "epoch of osculation in calendar date/time form",
+            "name": "epoch_cal"
+          },
+          {
+            "units": null,
+            "name": "equinox",
+            "description": "equinox of reference frame",
+            "title": "equinox"
+          },
+          {
+            "title": "e",
+            "name": "e",
+            "description": "eccentricity",
+            "units": null
+          },
+          {
+            "title": "a",
+            "description": "semi-major axis",
+            "name": "a",
+            "units": "au"
+          },
+          {
+            "title": "q",
+            "name": "q",
+            "description": "perihelion distance",
+            "units": "au"
+          },
+          {
+            "title": "i",
+            "name": "i",
+            "description": "inclination; angle with respect to x-y ecliptic plane",
+            "units": "deg"
+          },
+          {
+            "units": "deg",
+            "title": "node",
+            "name": "om",
+            "description": "longitude of the ascending node"
+          },
+          {
+            "description": "argument of perihelion",
+            "name": "w",
+            "title": "peri",
+            "units": "deg"
+          },
+          {
+            "units": "deg",
+            "title": "M",
+            "description": "mean anomaly",
+            "name": "ma"
+          },
+          {
+            "units": "au",
+            "title": "Q",
+            "description": "aphelion distance",
+            "name": "ad"
+          },
+          {
+            "units": "deg/d",
+            "description": "mean motion",
+            "name": "n",
+            "title": "n"
+          },
+          {
+            "units": "TDB",
+            "name": "tp",
+            "description": "time of perihelion passage",
+            "title": "tp"
+          },
+          {
+            "name": "tp_cal",
+            "description": "time of perihelion passage",
+            "title": "tp",
+            "units": "TDB"
+          },
+          {
+            "units": "d",
+            "description": "sidereal orbital period",
+            "name": "per",
+            "title": "period"
+          },
+          {
+            "title": "period",
+            "name": "per_y",
+            "description": "sidereal orbital period",
+            "units": "years"
+          },
+          {
+            "units": "au",
+            "title": "Earth MOID",
+            "description": "Earth Minimum Orbit Intersection Distance",
+            "name": "moid"
+          },
+          {
+            "name": "moid_ld",
+            "description": "Earth Minimum Orbit Intersection Distance",
+            "title": "Earth MOID",
+            "units": "LD"
+          },
+          {
+            "units": "au",
+            "title": "Jupiter MOID",
+            "name": "moid_jup",
+            "description": "Jupiter Minimum Orbit Intersection Distance"
+          },
+          {
+            "description": "Jupiter Tisserand Invariant",
+            "name": "t_jup",
+            "title": "T-Jupiter",
+            "units": null
+          },
+          {
+            "title": "e-sigma",
+            "description": "eccentricity (1-sigma uncertainty)",
+            "name": "sigma_e",
+            "units": null
+          },
+          {
+            "name": "sigma_a",
+            "description": "semi-major axis (1-sigma uncertainty)",
+            "title": "a-sigma",
+            "units": "au"
+          },
+          {
+            "description": "perihelion distance (1-sigma uncertainty)",
+            "name": "sigma_q",
+            "title": "q-sigma",
+            "units": "au"
+          },
+          {
+            "units": "deg",
+            "title": "i-sigma",
+            "description": "inclination (1-sigma uncertainty)",
+            "name": "sigma_i"
+          },
+          {
+            "units": "deg",
+            "name": "sigma_om",
+            "description": "long. of the asc. node (1-sigma uncertainty)",
+            "title": "node-sigma"
+          },
+          {
+            "units": "deg",
+            "title": "peri-sigma",
+            "name": "sigma_w",
+            "description": "argument of perihelion (1-sigma uncertainty)"
+          },
+          {
+            "title": "M-sigma",
+            "description": "mean anomaly (1-sigma uncertainty)",
+            "name": "sigma_ma",
+            "units": "deg"
+          },
+          {
+            "description": "aphelion distance (1-sigma uncertainty)",
+            "name": "sigma_ad",
+            "title": "Q (1-sigma)",
+            "units": "au"
+          },
+          {
+            "units": "deg/d",
+            "title": "n (1-sigma)",
+            "name": "sigma_n",
+            "description": "mean motion (1-sigma uncertainty)"
+          },
+          {
+            "units": "d",
+            "title": "tp-sigma",
+            "description": "time of peri. passage (1-sigma uncertainty)",
+            "name": "sigma_tp"
+          },
+          {
+            "units": "d",
+            "description": "sidereal orbital period (1-sigma uncertainty)",
+            "name": "sigma_per",
+            "title": "period-sigma"
+          },
+          {
+            "units": null,
+            "name": "class",
+            "description": "orbit classification",
+            "title": "orbit class"
+          },
+          {
+            "units": null,
+            "name": "producer",
+            "description": "name of person (or institution) who computed the orbit",
+            "title": "producer"
+          },
+          {
+            "name": "data_arc",
+            "description": "number of days spanned by the data-arc",
+            "title": "data-arc span",
+            "units": "d"
+          },
+          {
+            "title": "date of first obs.",
+            "name": "first_obs",
+            "description": "date of first observation used in the orbit fit",
+            "units": "UT"
+          },
+          {
+            "units": "UT",
+            "description": "date of last observation used in the orbit fit",
+            "name": "last_obs",
+            "title": "date of last obs."
+          },
+          {
+            "units": null,
+            "description": "number of observations (all types) used in fit",
+            "name": "n_obs_used",
+            "title": "# obs. used (total)"
+          },
+          {
+            "name": "n_del_obs_used",
+            "description": "number of delay-radar observations used in fit",
+            "title": "# obs. used (del.)",
+            "units": null
+          },
+          {
+            "description": "number of Doppler-radar observations used in fit",
+            "name": "n_dop_obs_used",
+            "title": "# obs. used (dop.)",
+            "units": null
+          },
+          {
+            "name": "condition_code",
+            "description": "orbit condition code (MPC 'U' parameter)",
+            "title": "condition code",
+            "units": null
+          },
+          {
+            "units": "arcsec",
+            "title": "norm. RMS of fit",
+            "name": "rms",
+            "description": "normalized RMS of orbit fit"
+          },
+          {
+            "name": "two_body",
+            "description": "2-body dynamics used flag",
+            "title": "two-body model",
+            "units": "T/F"
+          },
+          {
+            "units": null,
+            "title": "A1",
+            "name": "A1",
+            "description": "non-grav. radial parameter"
+          },
+          {
+            "description": "non-grav. radial parameter (1-sigma uncertainty)",
+            "name": "A1_sigma",
+            "title": "A1-sigma",
+            "units": null
+          },
+          {
+            "units": null,
+            "name": "A2",
+            "description": "non-grav. transverse parameter",
+            "title": "A2"
+          },
+          {
+            "units": null,
+            "name": "A2_sigma",
+            "description": "non-grav. transverse parameter (1-sigma uncertainty)",
+            "title": "A2-sigma"
+          },
+          {
+            "name": "A3",
+            "description": "non-grav. normal parameter",
+            "title": "A3",
+            "units": null
+          },
+          {
+            "title": "A3-sigma",
+            "description": "non-grav. normal parameter (1-sigma uncertainty)",
+            "name": "A3_sigma",
+            "units": null
+          },
+          {
+            "units": "d",
+            "description": "non-grav. peri.-maximum offset",
+            "name": "DT",
+            "title": "DT"
+          },
+          {
+            "name": "DT_sigma",
+            "description": "non-grav. peri.-maximum offset (1-sigma uncertainty)",
+            "title": "DT-sigma",
+            "units": "d"
+          }
+        ]
+      },
+      "object": {
+        "list": [
+          {
+            "units": null,
+            "name": "spkid",
+            "description": "object primary SPK-ID",
+            "title": "SPK-ID"
+          },
+          {
+            "title": "object fullname",
+            "description": "object full name/designation",
+            "name": "full_name",
+            "units": null
+          },
+          {
+            "units": null,
+            "name": "pdes",
+            "description": "object primary designation",
+            "title": "prim. desig."
+          },
+          {
+            "units": null,
+            "title": "IAU name",
+            "name": "name",
+            "description": "object IAU name"
+          },
+          {
+            "units": null,
+            "name": "prefix",
+            "description": "comet designation prefix",
+            "title": "prefix"
+          },
+          {
+            "units": "Y/N",
+            "title": "NEO",
+            "description": "Near-Earth Object (NEO) flag",
+            "name": "neo"
+          },
+          {
+            "units": "Y/N",
+            "description": "Potentially Hazardous Asteroid (PHA) flag",
+            "name": "pha",
+            "title": "PHA"
+          },
+          {
+            "title": "# sats",
+            "name": "sats",
+            "description": "Number of known satellites",
+            "units": null
+          }
+        ],
+        "field_label": "Object Fields"
+      }
+    }
+  }
+}

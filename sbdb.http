@@ -1,0 +1,2 @@
+### Get Fields
+GET https://ssd-api.jpl.nasa.gov/sbdb_query.api?info=field
