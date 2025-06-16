@@ -1,5 +1,5 @@
 # sbdb-go
-A Go client &amp; mapper for the JPL Small-Body Small-Body Database
+A Go client &amp; mapper for the JPL Small-Body Database
 
 # Data Source
 This project uses publicly available data from NASA JPL's Small-Body Database API.
