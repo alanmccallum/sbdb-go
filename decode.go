@@ -17,6 +17,7 @@ func logFailedTypeAssert(fn, field string, value any) {
 	log.Debug("Type assertion failed", "fn", fn, "field", field, "value", value)
 }
 
+// Decode parses an SBDB JSON payload from r.
 func Decode(r io.Reader) (*Payload, error) {
 	if r == nil {
 		return nil, errors.New("nil reader")
@@ -25,12 +26,15 @@ func Decode(r io.Reader) (*Payload, error) {
 		r = bufio.NewReader(r)
 	}
 	var p = Payload{}
-	if err := json.NewDecoder(r).Decode(&p); err != nil {
+	dec := json.NewDecoder(r)
+	dec.UseNumber()
+	if err := dec.Decode(&p); err != nil {
 		return nil, fmt.Errorf("decode failed: %w", err)
 	}
 	return &p, nil
 }
 
+// Payload is a raw SBDB response containing records and metadata.
 type Payload struct {
 	Signature struct {
 		Version string `json:"version"`
@@ -41,6 +45,7 @@ type Payload struct {
 	Count  int      `json:"count"`
 }
 
+// Records returns the payload data as a slice of generic Records.
 func (p *Payload) Records() ([]Record, error) {
 	records := make([]Record, len(p.Data))
 	for i, b := range p.Data {
@@ -56,6 +61,7 @@ func (p *Payload) Records() ([]Record, error) {
 	return records, nil
 }
 
+// Bodies converts the payload data into strongly typed Body structs.
 func (p *Payload) Bodies() ([]Body, error) {
 	records, err := p.Records()
 	if err != nil {
@@ -76,6 +82,7 @@ func (p *Payload) Bodies() ([]Body, error) {
 	return bodies, nil
 }
 
+// Record represents a single result row as a map of field names to values.
 type Record map[string]any
 
 func (r Record) identity() Identity {
@@ -200,11 +207,13 @@ func (r Record) getFloat(field string) *float64 {
 		return nil
 	}
 	switch v := r[field].(type) {
-	case int:
-		f := float64(v)
+	case json.Number:
+		f, err := v.Float64()
+		if err != nil {
+			logFailedTypeAssert("getFloat(json.Number)", field, r[field])
+			return nil
+		}
 		return &f
-	case float64:
-		return &v
 	case string:
 		f, err := strconv.ParseFloat(v, 64)
 		if err != nil {
@@ -222,10 +231,22 @@ func (r Record) getInt(field string) *int {
 		return nil
 	}
 	switch v := r[field].(type) {
-	case int:
-		return &v
-	case float64:
-		i := int(v)
+	case json.Number:
+		i64, err := v.Int64()
+		if errors.Is(err, strconv.ErrSyntax) {
+			f, err := v.Float64()
+			if err != nil {
+				logFailedTypeAssert("getFloat(json.Number)", field, r[field])
+				return nil
+			}
+			i := int(f)
+			return &i
+		}
+		if err != nil {
+			logFailedTypeAssert("getInt(json.Number)", field, r[field])
+			return nil
+		}
+		i := int(i64)
 		return &i
 	case string:
 		i, err := strconv.Atoi(v)
@@ -243,12 +264,17 @@ func (r Record) getString(field string) *string {
 	if r[field] == nil {
 		return nil
 	}
-	if s, ok := r[field].(string); ok {
+	switch v := r[field].(type) {
+	case string:
+		return &v
+	case json.Number:
+		s := v.String()
+		return &s
+	default:
+		log.Debug("Type assertion failed, defaulting to fmt.Sprint", "fn", "getString", "field", field, "value", r[field])
+		s := fmt.Sprint(r[field])
 		return &s
 	}
-	log.Debug("Type assertion failed, defaulting to fmt.Sprint", "fn", "getString", "field", field, "value", r[field])
-	s := fmt.Sprint(r[field])
-	return &s
 }
 func (r Record) getBool(field string) *bool {
 	if r[field] == nil {

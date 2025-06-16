@@ -2,6 +2,7 @@ package sbdb
 
 import (
 	"bytes"
+	"encoding/json"
 	"log/slog"
 	"os"
 	"reflect"
@@ -234,19 +235,19 @@ func TestRecord_getFloat(t *testing.T) {
 			want: ptrTo(3.14159),
 		},
 		{
-			name: "Float",
+			name: "JSON Number (float)",
 			r: Record{
-				"float": 3.14159,
+				"num": json.Number("3.14159"),
 			},
-			args: args{"float"},
+			args: args{"num"},
 			want: ptrTo(3.14159),
 		},
 		{
-			name: "Int",
+			name: "JSON Number (int)",
 			r: Record{
-				"int": 3,
+				"num": json.Number("3"),
 			},
-			args: args{"int"},
+			args: args{"num"},
 			want: ptrTo(3.0),
 		},
 		{
@@ -302,19 +303,19 @@ func TestRecord_getInt(t *testing.T) {
 			want: ptrTo(3),
 		},
 		{
-			name: "Float",
+			name: "JSON Number (int)",
 			r: Record{
-				"float": 3.14159,
+				"num": json.Number("3"),
 			},
-			args: args{"float"},
+			args: args{"num"},
 			want: ptrTo(3),
 		},
 		{
-			name: "Int",
+			name: "JSON Number (float)",
 			r: Record{
-				"int": 3,
+				"num": json.Number("3.14159"),
 			},
-			args: args{"int"},
+			args: args{"num"},
 			want: ptrTo(3),
 		},
 		{
@@ -360,6 +361,22 @@ func TestRecord_getString(t *testing.T) {
 			},
 			args: args{"string"},
 			want: ptrTo("Hello World"),
+		},
+		{
+			name: "JSON Number (int)",
+			r: Record{
+				"num": json.Number("3"),
+			},
+			args: args{"num"},
+			want: ptrTo("3"),
+		},
+		{
+			name: "JSON Number (float)",
+			r: Record{
+				"num": json.Number("3.14159"),
+			},
+			args: args{"num"},
+			want: ptrTo("3.14159"),
 		},
 		{
 			name: "Float",
