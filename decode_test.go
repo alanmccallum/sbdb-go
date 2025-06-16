@@ -3,6 +3,7 @@ package sbdb
 import (
 	"bytes"
 	"encoding/json"
+	"io"
 	"log/slog"
 	"os"
 	"reflect"
@@ -14,107 +15,196 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
-//func TestDecode(t *testing.T) {
-//	type args struct {
-//		r io.Reader
-//	}
-//	tests := []struct {
-//		name    string
-//		args    args
-//		want    *Payload
-//		wantErr bool
-//	}{
-//		// TODO: Add test cases.
-//	}
-//	for _, tt := range tests {
-//		t.Run(tt.name, func(t *testing.T) {
-//			got, err := Decode(tt.args.r)
-//			if (err != nil) != tt.wantErr {
-//				t.Errorf("Decode() error = %v, wantErr %v", err, tt.wantErr)
-//				return
-//			}
-//			if !reflect.DeepEqual(got, tt.want) {
-//				t.Errorf("Decode() got = %v, want %v", got, tt.want)
-//			}
-//		})
-//	}
-//}
-//
-//func TestPayload_Bodies(t *testing.T) {
-//	type fields struct {
-//		Signature struct {
-//			Version string `json:"version"`
-//			Source  string `json:"source"`
-//		}
-//		Fields []string
-//		Data   [][]any
-//		Count  int
-//	}
-//	tests := []struct {
-//		name    string
-//		fields  fields
-//		want    []Body
-//		wantErr bool
-//	}{
-//		// TODO: Add test cases.
-//	}
-//	for _, tt := range tests {
-//		t.Run(tt.name, func(t *testing.T) {
-//			p := &Payload{
-//				Signature: tt.fields.Signature,
-//				Fields:    tt.fields.Fields,
-//				Data:      tt.fields.Data,
-//				Count:     tt.fields.Count,
-//			}
-//			got, err := p.Bodies()
-//			if (err != nil) != tt.wantErr {
-//				t.Errorf("Bodies() error = %v, wantErr %v", err, tt.wantErr)
-//				return
-//			}
-//			if !reflect.DeepEqual(got, tt.want) {
-//				t.Errorf("Bodies() got = %v, want %v", got, tt.want)
-//			}
-//		})
-//	}
-//}
-//
-//func TestPayload_Records(t *testing.T) {
-//	type fields struct {
-//		Signature struct {
-//			Version string `json:"version"`
-//			Source  string `json:"source"`
-//		}
-//		Fields []string
-//		Data   [][]any
-//		Count  int
-//	}
-//	tests := []struct {
-//		name    string
-//		fields  fields
-//		want    []Record
-//		wantErr bool
-//	}{
-//		// TODO: Add test cases.
-//	}
-//	for _, tt := range tests {
-//		t.Run(tt.name, func(t *testing.T) {
-//			p := &Payload{
-//				Signature: tt.fields.Signature,
-//				Fields:    tt.fields.Fields,
-//				Data:      tt.fields.Data,
-//				Count:     tt.fields.Count,
-//			}
-//			got, err := p.Records()
-//			if (err != nil) != tt.wantErr {
-//				t.Errorf("Records() error = %v, wantErr %v", err, tt.wantErr)
-//				return
-//			}
-//			if !reflect.DeepEqual(got, tt.want) {
-//				t.Errorf("Records() got = %v, want %v", got, tt.want)
-//			}
-//		})
-//	}
-//}
+func TestDecode(t *testing.T) {
+	type args struct {
+		r io.Reader
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    *Payload
+		wantErr bool
+	}{
+		{
+			name: "valid",
+			args: args{bytes.NewBufferString(`{"signature":{"version":"1","source":"test"},"fields":["spkid"],"data":[[123]],"count":1}`)},
+			want: &Payload{
+				Signature: struct {
+					Version string "json:\"version\""
+					Source  string "json:\"source\""
+				}{Version: "1", Source: "test"},
+				Fields: []string{"spkid"},
+				Data:   [][]any{{json.Number("123")}},
+				Count:  1,
+			},
+			wantErr: false,
+		},
+		{
+			name:    "nil reader",
+			args:    args{nil},
+			want:    nil,
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := Decode(tt.args.r)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Decode() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Decode() got = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestPayload_Bodies(t *testing.T) {
+	wantBody := Body{Identity: Identity{SpkID: ptrTo(123), NEO: ptrTo(true)}}
+	type fields struct {
+		Signature struct {
+			Version string `json:"version"`
+			Source  string `json:"source"`
+		}
+		Fields []string
+		Data   [][]any
+		Count  int
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		want    []Body
+		wantErr bool
+	}{
+
+		{
+			name: "ok",
+			fields: struct {
+				Signature struct {
+					Version string `json:"version"`
+					Source  string `json:"source"`
+				}
+				Fields []string
+				Data   [][]any
+				Count  int
+			}{
+				Fields: []string{"spkid", "neo"},
+				Data:   [][]any{{json.Number("123"), "Y"}},
+			},
+			want:    []Body{wantBody},
+			wantErr: false,
+		},
+		{
+			name: "mismatched row",
+			fields: struct {
+				Signature struct {
+					Version string `json:"version"`
+					Source  string `json:"source"`
+				}
+				Fields []string
+				Data   [][]any
+				Count  int
+			}{
+				Fields: []string{"spkid", "neo"},
+				Data:   [][]any{{json.Number("123")}},
+			},
+			want:    nil,
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			p := &Payload{
+				Signature: tt.fields.Signature,
+				Fields:    tt.fields.Fields,
+				Data:      tt.fields.Data,
+				Count:     tt.fields.Count,
+			}
+			got, err := p.Bodies()
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Bodies() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Bodies() got = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestPayload_Records(t *testing.T) {
+	type fields struct {
+		Signature struct {
+			Version string `json:"version"`
+			Source  string `json:"source"`
+		}
+		Fields []string
+		Data   [][]any
+		Count  int
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		want    []Record
+		wantErr bool
+	}{
+		{
+			name: "ok",
+			fields: struct {
+				Signature struct {
+					Version string `json:"version"`
+					Source  string `json:"source"`
+				}
+				Fields []string
+				Data   [][]any
+				Count  int
+			}{
+				Fields: []string{"a", "b"},
+				Data:   [][]any{{json.Number("1"), json.Number("2")}},
+			},
+			want: []Record{
+				{"a": json.Number("1"), "b": json.Number("2")},
+			},
+			wantErr: false,
+		},
+		{
+			name: "mismatch",
+			fields: struct {
+				Signature struct {
+					Version string `json:"version"`
+					Source  string `json:"source"`
+				}
+				Fields []string
+				Data   [][]any
+				Count  int
+			}{
+				Fields: []string{"a", "b"},
+				Data:   [][]any{{json.Number("1")}},
+			},
+			want:    nil,
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			p := &Payload{
+				Signature: tt.fields.Signature,
+				Fields:    tt.fields.Fields,
+				Data:      tt.fields.Data,
+				Count:     tt.fields.Count,
+			}
+			got, err := p.Records()
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Records() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("Records() got = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
 
 func TestRecord_getBool(t *testing.T) {
 	type args struct {
@@ -419,200 +509,6 @@ func TestRecord_getString(t *testing.T) {
 		})
 	}
 }
-
-//func TestRecord_identity(t *testing.T) {
-//	tests := []struct {
-//		name string
-//		r    Record
-//		want Identity
-//	}{
-//		// TODO: Add test cases.
-//	}
-//	for _, tt := range tests {
-//		t.Run(tt.name, func(t *testing.T) {
-//			if got := tt.r.identity(); !reflect.DeepEqual(got, tt.want) {
-//				t.Errorf("identity() = %v, want %v", got, tt.want)
-//			}
-//		})
-//	}
-//}
-
-func TestRecord_nonGrav(t *testing.T) {
-	tests := []struct {
-		name string
-		r    Record
-		want NonGrav
-	}{
-		{
-			name: "mixed types",
-			r: Record{
-				A1:      1.23,
-				A2:      "2.34",
-				A3:      nil,
-				DT:      4,
-				S0:      "5.6",
-				A1Sigma: 0.1,
-				A2Sigma: "0.2",
-				A3Sigma: nil,
-				DTSigma: "0.4",
-				S0Sigma: 0.5,
-			},
-			want: NonGrav{
-				A1:      ptrTo(1.23),
-				A2:      ptrTo(2.34),
-				A3:      nil,
-				DT:      ptrTo(4.0),
-				S0:      ptrTo(5.6),
-				A1Sigma: ptrTo(0.1),
-				A2Sigma: ptrTo(0.2),
-				A3Sigma: nil,
-				DTSigma: ptrTo(0.4),
-				S0Sigma: ptrTo(0.5),
-			},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.r.nonGrav(); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("nonGrav() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-//func TestRecord_orbit(t *testing.T) {
-//	tests := []struct {
-//		name string
-//		r    Record
-//		want Orbit
-//	}{
-//		// TODO: Add test cases.
-//	}
-//	for _, tt := range tests {
-//		t.Run(tt.name, func(t *testing.T) {
-//			if got := tt.r.orbit(); !reflect.DeepEqual(got, tt.want) {
-//				t.Errorf("orbit() = %v, want %v", got, tt.want)
-//			}
-//		})
-//	}
-//}
-
-func TestRecord_physical(t *testing.T) {
-	tests := []struct {
-		name string
-		r    Record
-		want Physical
-	}{
-
-		{
-			name: "mixed types",
-			r: Record{
-				H:             1.1,
-				G:             "0.15",
-				M1:            nil,
-				K1:            0,
-				M2:            2.2,
-				K2:            "1.1",
-				PC:            0.5,
-				HSigma:        "0.1",
-				Diameter:      100,
-				Extent:        "10x20",
-				GM:            "123.4",
-				Density:       3.0,
-				RotPer:        7,
-				Pole:          "90,0",
-				Albedo:        0.1,
-				BV:            "0.2",
-				UB:            0.3,
-				IR:            "0.4",
-				SpecT:         "S",
-				SpecB:         "B",
-				DiameterSigma: "0.7",
-			},
-			want: Physical{
-				H:             ptrTo(1.1),
-				G:             ptrTo(0.15),
-				M1:            nil,
-				K1:            ptrTo(0.0),
-				M2:            ptrTo(2.2),
-				K2:            ptrTo(1.1),
-				PC:            ptrTo(0.5),
-				HSigma:        ptrTo(0.1),
-				Diameter:      ptrTo(100.0),
-				Extent:        ptrTo("10x20"),
-				GM:            ptrTo(123.4),
-				Density:       ptrTo(3.0),
-				RotPer:        ptrTo(7.0),
-				Pole:          ptrTo("90,0"),
-				Albedo:        ptrTo(0.1),
-				BV:            ptrTo(0.2),
-				UB:            ptrTo(0.3),
-				IR:            ptrTo(0.4),
-				SpecT:         ptrTo("S"),
-				SpecB:         ptrTo("B"),
-				DiameterSigma: ptrTo(0.7),
-			},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.r.physical(); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("physical() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-//func TestRecord_quality(t *testing.T) {
-//	tests := []struct {
-//		name string
-//		r    Record
-//		want Quality
-//	}{
-//		// TODO: Add test cases.
-//	}
-//	for _, tt := range tests {
-//		t.Run(tt.name, func(t *testing.T) {
-//			if got := tt.r.quality(); !reflect.DeepEqual(got, tt.want) {
-//				t.Errorf("quality() = %v, want %v", got, tt.want)
-//			}
-//		})
-//	}
-//}
-//
-//func TestRecord_solution(t *testing.T) {
-//	tests := []struct {
-//		name string
-//		r    Record
-//		want Solution
-//	}{
-//		// TODO: Add test cases.
-//	}
-//	for _, tt := range tests {
-//		t.Run(tt.name, func(t *testing.T) {
-//			if got := tt.r.solution(); !reflect.DeepEqual(got, tt.want) {
-//				t.Errorf("solution() = %v, want %v", got, tt.want)
-//			}
-//		})
-//	}
-//}
-//
-//func TestRecord_uncertainty(t *testing.T) {
-//	tests := []struct {
-//		name string
-//		r    Record
-//		want Uncertainty
-//	}{
-//		// TODO: Add test cases.
-//	}
-//	for _, tt := range tests {
-//		t.Run(tt.name, func(t *testing.T) {
-//			if got := tt.r.uncertainty(); !reflect.DeepEqual(got, tt.want) {
-//				t.Errorf("uncertainty() = %v, want %v", got, tt.want)
-//			}
-//		})
-//	}
-//}
 
 func FuzzBodies(f *testing.F) {
 	f.Add([]byte(`{"fields":["spkid","full_name","neo","t_jup"],"data":[[1234,"name","Y","3.14"]]}`)) // realistic, full
