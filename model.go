@@ -2,88 +2,94 @@ package sbdb
 
 // Constants representing SBDB query fields.
 const (
-	SpkID          = "spkid"          // SPICE identifier for the body
-	FullName       = "full_name"      // Complete object designation
-	Kind           = "kind"           // Body kind, e.g. asteroid or comet
-	PDES           = "pdes"           // Primary designation
-	Name           = "name"           // IAU name
-	Prefix         = "prefix"         // Numbered prefix
-	Class          = "class"          // Dynamical class
-	NEO            = "neo"            // Near Earth Object flag
-	PHA            = "pha"            // Potentially Hazardous Asteroid flag
-	TJupiter       = "t_jup"          // Tisserand parameter w.r.t. Jupiter
-	MOID           = "moid"           // Earth minimum orbit intersection distance (au)
-	MOIDJupiter    = "moid_jup"       // Jupiter MOID (au)
-	OrbitID        = "orbit_id"       // Orbit solution identifier
-	Epoch          = "epoch"          // Reference epoch (JD)
-	Equinox        = "equinox"        // Reference frame
-	Eccentricity   = "e"              // Orbital eccentricity
-	SemimajorAxis  = "a"              // Semi-major axis (au)
-	PerihelionDist = "q"              // Perihelion distance (au)
-	Inclination    = "i"              // Inclination to the ecliptic (deg)
-	AscNode        = "om"             // Longitude of ascending node (deg)
-	PeriapsisArg   = "w"              // Argument of periapsis (deg)
-	MeanAnomaly    = "ma"             // Mean anomaly at epoch (deg)
-	PeriapsisTime  = "tp"             // Time of periapsis passage (JD)
-	OrbitalPeriod  = "per"            // Orbital period (days)
-	MeanMotion     = "n"              // Mean motion (deg/day)
-	AphelionDist   = "ad"             // Aphelion distance (au)
-	SigmaEcc       = "sigma_e"        // 1-sigma uncertainty of eccentricity
-	SigmaA         = "sigma_a"        // 1-sigma uncertainty of semi-major axis (au)
-	SigmaQ         = "sigma_q"        // 1-sigma uncertainty of perihelion distance (au)
-	SigmaI         = "sigma_i"        // 1-sigma uncertainty of inclination (deg)
-	SigmaAscNode   = "sigma_om"       // 1-sigma uncertainty of ascending node (deg)
-	SigmaPeriArg   = "sigma_w"        // 1-sigma uncertainty of periapsis argument (deg)
-	SigmaTP        = "sigma_tp"       // 1-sigma uncertainty of time of periapsis (JD)
-	SigmaMA        = "sigma_ma"       // 1-sigma uncertainty of mean anomaly (deg)
-	SigmaPeriod    = "sigma_per"      // 1-sigma uncertainty of orbital period (days)
-	SigmaN         = "sigma_n"        // 1-sigma uncertainty of mean motion (deg/day)
-	SigmaAD        = "sigma_ad"       // 1-sigma uncertainty of aphelion distance (au)
-	Source         = "source"         // Source of orbit solution
-	SolutionDate   = "soln_date"      // Solution date
-	Producer       = "producer"       // Producer of orbit solution
-	DataArc        = "data_arc"       // Data-arc span (days)
-	FirstObs       = "first_obs"      // First observation date
-	LastObs        = "last_obs"       // Last observation date
-	ObsUsed        = "n_obs_used"     // Number of observations used
-	DelayObsUsed   = "n_del_obs_used" // Number of delay observations used
-	DopplerObsUsed = "n_dop_obs_used" // Number of Doppler observations used
-	TwoBody        = "two_body"       // Two-body approximation flag
-	PEUsed         = "pe_used"        // Planetary ephemeris used
-	SBUsed         = "sb_used"        // Small-body perturbers used
-	ConditionCode  = "condition_code" // Orbit uncertainty condition code
-	RMS            = "rms"            // RMS residual (arcsec)
-	A1             = "A1"             // Non-gravitational acceleration parameter A1 (au/d^2)
-	A2             = "A2"             // Non-gravitational acceleration parameter A2 (au/d^2)
-	A3             = "A3"             // Non-gravitational acceleration parameter A3 (au/d^2)
-	DT             = "DT"             // Non-gravitational time parameter (days)
-	S0             = "S0"             // Non-gravitational scale factor
-	A1Sigma        = "A1_sigma"       // 1-sigma uncertainty of A1 (au/d^2)
-	A2Sigma        = "A2_sigma"       // 1-sigma uncertainty of A2 (au/d^2)
-	A3Sigma        = "A3_sigma"       // 1-sigma uncertainty of A3 (au/d^2)
-	DTSigma        = "DT_sigma"       // 1-sigma uncertainty of DT (days)
-	S0Sigma        = "S0_sigma"       // 1-sigma uncertainty of S0
-	H              = "H"              // Absolute magnitude H
-	G              = "G"              // Photometric slope parameter G
-	M1             = "M1"             // Photometric parameter M1
-	K1             = "K1"             // Photometric parameter K1
-	M2             = "M2"             // Photometric parameter M2
-	K2             = "K2"             // Photometric parameter K2
-	PC             = "PC"             // Photometric color index PC
-	HSigma         = "H_sigma"        // 1-sigma uncertainty of H
-	Diameter       = "diameter"       // Diameter (km)
-	Extent         = "extent"         // Physical extent (km)
-	GM             = "GM"             // Gravitational parameter (km^3/s^2)
-	Density        = "density"        // Bulk density (g/cm^3)
-	RotPer         = "rot_per"        // Rotation period (hours)
-	Pole           = "pole"           // Pole orientation (deg)
-	Albedo         = "albedo"         // Geometric albedo
-	BV             = "BV"             // B-V color index
-	UB             = "UB"             // U-B color index
-	IR             = "IR"             // Infrared color index
-	SpecT          = "spec_T"         // Spectral taxonomy
-	SpecB          = "spec_B"         // Spectral bin
-	DiameterSigma  = "diameter_sigma" // 1-sigma uncertainty of diameter (km)
+	SpkID            = "spkid"          // SPICE identifier for the body
+	FullName         = "full_name"      // Complete object designation
+	Kind             = "kind"           // Body kind, e.g. asteroid or comet
+	PDES             = "pdes"           // Primary designation
+	Name             = "name"           // IAU name
+	Prefix           = "prefix"         // Numbered prefix
+	Class            = "class"          // Dynamical class
+	NEO              = "neo"            // Near Earth Object flag
+	PHA              = "pha"            // Potentially Hazardous Asteroid flag
+	Sats             = "sats"           // Number of known satellites
+	TJupiter         = "t_jup"          // Tisserand parameter w.r.t. Jupiter
+	MOID             = "moid"           // Earth minimum orbit intersection distance (au)
+	MOIDJupiter      = "moid_jup"       // Jupiter MOID (au)
+	MOIDLD           = "moid_ld"        // Earth MOID in lunar distances
+	OrbitID          = "orbit_id"       // Orbit solution identifier
+	Epoch            = "epoch"          // Reference epoch (JD)
+	EpochMJD         = "epoch_mjd"      // Reference epoch (MJD)
+	EpochCal         = "epoch_cal"      // Reference epoch (calendar)
+	Equinox          = "equinox"        // Reference frame
+	Eccentricity     = "e"              // Orbital eccentricity
+	SemimajorAxis    = "a"              // Semi-major axis (au)
+	PerihelionDist   = "q"              // Perihelion distance (au)
+	Inclination      = "i"              // Inclination to the ecliptic (deg)
+	AscNode          = "om"             // Longitude of ascending node (deg)
+	PeriapsisArg     = "w"              // Argument of periapsis (deg)
+	MeanAnomaly      = "ma"             // Mean anomaly at epoch (deg)
+	PeriapsisTime    = "tp"             // Time of periapsis passage (JD)
+	PeriapsisTimeCal = "tp_cal"         // Time of periapsis passage (calendar)
+	OrbitalPeriod    = "per"            // Orbital period (days)
+	OrbitalPeriodYr  = "per_y"          // Orbital period (years)
+	MeanMotion       = "n"              // Mean motion (deg/day)
+	AphelionDist     = "ad"             // Aphelion distance (au)
+	SigmaEcc         = "sigma_e"        // 1-sigma uncertainty of eccentricity
+	SigmaA           = "sigma_a"        // 1-sigma uncertainty of semi-major axis (au)
+	SigmaQ           = "sigma_q"        // 1-sigma uncertainty of perihelion distance (au)
+	SigmaI           = "sigma_i"        // 1-sigma uncertainty of inclination (deg)
+	SigmaAscNode     = "sigma_om"       // 1-sigma uncertainty of ascending node (deg)
+	SigmaPeriArg     = "sigma_w"        // 1-sigma uncertainty of periapsis argument (deg)
+	SigmaTP          = "sigma_tp"       // 1-sigma uncertainty of time of periapsis (JD)
+	SigmaMA          = "sigma_ma"       // 1-sigma uncertainty of mean anomaly (deg)
+	SigmaPeriod      = "sigma_per"      // 1-sigma uncertainty of orbital period (days)
+	SigmaN           = "sigma_n"        // 1-sigma uncertainty of mean motion (deg/day)
+	SigmaAD          = "sigma_ad"       // 1-sigma uncertainty of aphelion distance (au)
+	Source           = "source"         // Source of orbit solution
+	SolutionDate     = "soln_date"      // Solution date
+	Producer         = "producer"       // Producer of orbit solution
+	DataArc          = "data_arc"       // Data-arc span (days)
+	FirstObs         = "first_obs"      // First observation date
+	LastObs          = "last_obs"       // Last observation date
+	ObsUsed          = "n_obs_used"     // Number of observations used
+	DelayObsUsed     = "n_del_obs_used" // Number of delay observations used
+	DopplerObsUsed   = "n_dop_obs_used" // Number of Doppler observations used
+	TwoBody          = "two_body"       // Two-body approximation flag
+	PEUsed           = "pe_used"        // Planetary ephemeris used
+	SBUsed           = "sb_used"        // Small-body perturbers used
+	ConditionCode    = "condition_code" // Orbit uncertainty condition code
+	RMS              = "rms"            // RMS residual (arcsec)
+	A1               = "A1"             // Non-gravitational acceleration parameter A1 (au/d^2)
+	A2               = "A2"             // Non-gravitational acceleration parameter A2 (au/d^2)
+	A3               = "A3"             // Non-gravitational acceleration parameter A3 (au/d^2)
+	DT               = "DT"             // Non-gravitational time parameter (days)
+	S0               = "S0"             // Non-gravitational scale factor
+	A1Sigma          = "A1_sigma"       // 1-sigma uncertainty of A1 (au/d^2)
+	A2Sigma          = "A2_sigma"       // 1-sigma uncertainty of A2 (au/d^2)
+	A3Sigma          = "A3_sigma"       // 1-sigma uncertainty of A3 (au/d^2)
+	DTSigma          = "DT_sigma"       // 1-sigma uncertainty of DT (days)
+	S0Sigma          = "S0_sigma"       // 1-sigma uncertainty of S0
+	H                = "H"              // Absolute magnitude H
+	G                = "G"              // Photometric slope parameter G
+	M1               = "M1"             // Photometric parameter M1
+	K1               = "K1"             // Photometric parameter K1
+	M2               = "M2"             // Photometric parameter M2
+	K2               = "K2"             // Photometric parameter K2
+	PC               = "PC"             // Photometric color index PC
+	HSigma           = "H_sigma"        // 1-sigma uncertainty of H
+	Diameter         = "diameter"       // Diameter (km)
+	Extent           = "extent"         // Physical extent (km)
+	GM               = "GM"             // Gravitational parameter (km^3/s^2)
+	Density          = "density"        // Bulk density (g/cm^3)
+	RotPer           = "rot_per"        // Rotation period (hours)
+	Pole             = "pole"           // Pole orientation (deg)
+	Albedo           = "albedo"         // Geometric albedo
+	BV               = "BV"             // B-V color index
+	UB               = "UB"             // U-B color index
+	IR               = "IR"             // Infrared color index
+	SpecT            = "spec_T"         // Spectral taxonomy
+	SpecB            = "spec_B"         // Spectral bin
+	DiameterSigma    = "diameter_sigma" // 1-sigma uncertainty of diameter (km)
 )
 
 // Body represents a small-body record from the SBDB Query API.
@@ -108,27 +114,33 @@ type Identity struct {
 	Class       *string  `json:"class,omitempty"`     // Dynamical class
 	NEO         *bool    `json:"neo,omitempty"`       // Near Earth Object flag
 	PHA         *bool    `json:"pha,omitempty"`       // Potentially Hazardous flag
+	Sats        *int     `json:"sats,omitempty"`      // Number of satellites
 	TJupiter    *float64 `json:"t_jup,omitempty"`     // Tisserand parameter w.r.t. Jupiter
 	MOID        *float64 `json:"moid,omitempty"`      // Earth MOID (au)
+	MOIDLD      *float64 `json:"moid_ld,omitempty"`   // Earth MOID (LD)
 	MOIDJupiter *float64 `json:"moid_jup,omitempty"`  // Jupiter MOID (au)
 }
 
 // Orbit holds the osculating orbital elements.
 type Orbit struct {
-	OrbitID        *string  `json:"orbit_id,omitempty"` // Orbit solution identifier
-	Epoch          *float64 `json:"epoch,omitempty"`    // Epoch of osculation (JD)
-	Equinox        *string  `json:"equinox,omitempty"`  // Reference equinox
-	Eccentricity   *float64 `json:"e,omitempty"`        // Orbital eccentricity
-	SemimajorAxis  *float64 `json:"a,omitempty"`        // Semi-major axis (au)
-	PerihelionDist *float64 `json:"q,omitempty"`        // Perihelion distance (au)
-	Inclination    *float64 `json:"i,omitempty"`        // Inclination (deg)
-	AscNode        *float64 `json:"om,omitempty"`       // Longitude of ascending node (deg)
-	PeriapsisArg   *float64 `json:"w,omitempty"`        // Argument of periapsis (deg)
-	MeanAnomaly    *float64 `json:"ma,omitempty"`       // Mean anomaly at epoch (deg)
-	PeriapsisTime  *float64 `json:"tp,omitempty"`       // Time of periapsis (JD)
-	OrbitalPeriod  *float64 `json:"per,omitempty"`      // Orbital period (days)
-	MeanMotion     *float64 `json:"n,omitempty"`        // Mean motion (deg/day)
-	AphelionDist   *float64 `json:"ad,omitempty"`       // Aphelion distance (au)
+	OrbitID          *string  `json:"orbit_id,omitempty"`  // Orbit solution identifier
+	Epoch            *float64 `json:"epoch,omitempty"`     // Epoch of osculation (JD)
+	EpochMJD         *float64 `json:"epoch_mjd,omitempty"` // Epoch of osculation (MJD)
+	EpochCal         *string  `json:"epoch_cal,omitempty"` // Epoch of osculation (calendar)
+	Equinox          *string  `json:"equinox,omitempty"`   // Reference equinox
+	Eccentricity     *float64 `json:"e,omitempty"`         // Orbital eccentricity
+	SemimajorAxis    *float64 `json:"a,omitempty"`         // Semi-major axis (au)
+	PerihelionDist   *float64 `json:"q,omitempty"`         // Perihelion distance (au)
+	Inclination      *float64 `json:"i,omitempty"`         // Inclination (deg)
+	AscNode          *float64 `json:"om,omitempty"`        // Longitude of ascending node (deg)
+	PeriapsisArg     *float64 `json:"w,omitempty"`         // Argument of periapsis (deg)
+	MeanAnomaly      *float64 `json:"ma,omitempty"`        // Mean anomaly at epoch (deg)
+	PeriapsisTime    *float64 `json:"tp,omitempty"`        // Time of periapsis (JD)
+	PeriapsisTimeCal *string  `json:"tp_cal,omitempty"`    // Time of periapsis (calendar)
+	OrbitalPeriod    *float64 `json:"per,omitempty"`       // Orbital period (days)
+	OrbitalPeriodYr  *float64 `json:"per_y,omitempty"`     // Orbital period (years)
+	MeanMotion       *float64 `json:"n,omitempty"`         // Mean motion (deg/day)
+	AphelionDist     *float64 `json:"ad,omitempty"`        // Aphelion distance (au)
 }
 
 // Uncertainty lists one-sigma uncertainties for the orbital elements.
