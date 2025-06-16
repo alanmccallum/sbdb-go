@@ -419,24 +419,50 @@ func TestRecord_getString(t *testing.T) {
 //		})
 //	}
 //}
-//
-//func TestRecord_nonGrav(t *testing.T) {
-//	tests := []struct {
-//		name string
-//		r    Record
-//		want NonGrav
-//	}{
-//		// TODO: Add test cases.
-//	}
-//	for _, tt := range tests {
-//		t.Run(tt.name, func(t *testing.T) {
-//			if got := tt.r.nonGrav(); !reflect.DeepEqual(got, tt.want) {
-//				t.Errorf("nonGrav() = %v, want %v", got, tt.want)
-//			}
-//		})
-//	}
-//}
-//
+
+func TestRecord_nonGrav(t *testing.T) {
+	tests := []struct {
+		name string
+		r    Record
+		want NonGrav
+	}{
+		{
+			name: "mixed types",
+			r: Record{
+				A1:      1.23,
+				A2:      "2.34",
+				A3:      nil,
+				DT:      4,
+				S0:      "5.6",
+				A1Sigma: 0.1,
+				A2Sigma: "0.2",
+				A3Sigma: nil,
+				DTSigma: "0.4",
+				S0Sigma: 0.5,
+			},
+			want: NonGrav{
+				A1:      ptrTo(1.23),
+				A2:      ptrTo(2.34),
+				A3:      nil,
+				DT:      ptrTo(4.0),
+				S0:      ptrTo(5.6),
+				A1Sigma: ptrTo(0.1),
+				A2Sigma: ptrTo(0.2),
+				A3Sigma: nil,
+				DTSigma: ptrTo(0.4),
+				S0Sigma: ptrTo(0.5),
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.r.nonGrav(); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("nonGrav() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
 //func TestRecord_orbit(t *testing.T) {
 //	tests := []struct {
 //		name string
@@ -453,24 +479,73 @@ func TestRecord_getString(t *testing.T) {
 //		})
 //	}
 //}
-//
-//func TestRecord_physical(t *testing.T) {
-//	tests := []struct {
-//		name string
-//		r    Record
-//		want Physical
-//	}{
-//		// TODO: Add test cases.
-//	}
-//	for _, tt := range tests {
-//		t.Run(tt.name, func(t *testing.T) {
-//			if got := tt.r.physical(); !reflect.DeepEqual(got, tt.want) {
-//				t.Errorf("physical() = %v, want %v", got, tt.want)
-//			}
-//		})
-//	}
-//}
-//
+
+func TestRecord_physical(t *testing.T) {
+	tests := []struct {
+		name string
+		r    Record
+		want Physical
+	}{
+
+		{
+			name: "mixed types",
+			r: Record{
+				H:             1.1,
+				G:             "0.15",
+				M1:            nil,
+				K1:            0,
+				M2:            2.2,
+				K2:            "1.1",
+				PC:            0.5,
+				HSigma:        "0.1",
+				Diameter:      100,
+				Extent:        "10x20",
+				GM:            "123.4",
+				Density:       3.0,
+				RotPer:        7,
+				Pole:          "90,0",
+				Albedo:        0.1,
+				BV:            "0.2",
+				UB:            0.3,
+				IR:            "0.4",
+				SpecT:         "S",
+				SpecB:         "B",
+				DiameterSigma: "0.7",
+			},
+			want: Physical{
+				H:             ptrTo(1.1),
+				G:             ptrTo(0.15),
+				M1:            nil,
+				K1:            ptrTo(0.0),
+				M2:            ptrTo(2.2),
+				K2:            ptrTo(1.1),
+				PC:            ptrTo(0.5),
+				HSigma:        ptrTo(0.1),
+				Diameter:      ptrTo(100.0),
+				Extent:        ptrTo("10x20"),
+				GM:            ptrTo(123.4),
+				Density:       ptrTo(3.0),
+				RotPer:        ptrTo(7.0),
+				Pole:          ptrTo("90,0"),
+				Albedo:        ptrTo(0.1),
+				BV:            ptrTo(0.2),
+				UB:            ptrTo(0.3),
+				IR:            ptrTo(0.4),
+				SpecT:         ptrTo("S"),
+				SpecB:         ptrTo("B"),
+				DiameterSigma: ptrTo(0.7),
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.r.physical(); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("physical() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
 //func TestRecord_quality(t *testing.T) {
 //	tests := []struct {
 //		name string
