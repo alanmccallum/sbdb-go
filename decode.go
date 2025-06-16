@@ -18,6 +18,8 @@ func logFailedTypeAssert(fn, field string, value any) {
 }
 
 // Decode parses an SBDB JSON payload from r.
+// A json.Decoder is used with UseNumber so numeric fields are decoded as
+// json.Number instead of default float64 values.
 func Decode(r io.Reader) (*Payload, error) {
 	if r == nil {
 		return nil, errors.New("nil reader")
@@ -46,6 +48,8 @@ type Payload struct {
 }
 
 // Records returns the payload data as a slice of generic Records.
+// Because Decode uses json.Decoder.UseNumber, any numeric values may be
+// json.Number, which callers should handle appropriately
 func (p *Payload) Records() ([]Record, error) {
 	records := make([]Record, len(p.Data))
 	for i, b := range p.Data {
