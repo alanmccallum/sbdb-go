@@ -270,6 +270,9 @@ func (r Record) getString(field string) *string {
 	}
 	switch v := r[field].(type) {
 	case string:
+		if field == FullName {
+			v = strings.TrimSpace(v)
+		}
 		return &v
 	case json.Number:
 		s := v.String()
