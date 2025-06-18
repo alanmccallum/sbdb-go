@@ -2,6 +2,7 @@ package query
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/url"
 	"strconv"
@@ -114,12 +115,8 @@ func (c Class) String() string {
 }
 
 func (c Classes) String() string {
-	n := len(c)
-	if n > 3 {
-		n = 3
-	}
-	parts := make([]string, n)
-	for i, class := range c[:n] {
+	parts := make([]string, len(c))
+	for i, class := range c {
 		parts[i] = class.String()
 	}
 	return strings.Join(parts, ",")
@@ -200,15 +197,24 @@ type Filter struct {
 	MustHaveSatellite bool
 	// ExcludeFragments, when true, will exclude all comet fragments from results.
 	ExcludeFragments bool
-	FieldConstraints *Expr
+	FieldConstraints Expr
 }
 
 func (f Filter) Values() (url.Values, error) {
-	v := url.Values{}
-	if f.Fields != nil && len(f.Fields) > 0 {
-		v.Set("fields", strings.Join(f.Fields, ","))
+	if f.Fields == nil || len(f.Fields) < 0 {
+		return nil, errors.New("must provide at least one field")
 	}
-	if f.Sort != nil && len(f.Sort) > 0 {
+	if len(f.Sort) > 3 {
+		return nil, fmt.Errorf("len(Sort) = %d, max = 3", len(f.Sort))
+	}
+	if len(f.Classes) > 3 {
+		return nil, fmt.Errorf("len(Classes) = %d, max = 3", len(f.Classes))
+	}
+
+	v := url.Values{}
+	v.Set("fields", strings.Join(f.Fields, ","))
+
+	if len(f.Sort) > 0 {
 		v.Set("sort", strings.Join(f.Sort, ","))
 	}
 	if f.Limit > 0 {
