@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/url"
+	"strconv"
 	"strings"
 )
 
@@ -142,10 +143,10 @@ func (c ComparisonExpr) MarshalJSON() ([]byte, error) {
 	return json.Marshal(string(c))
 }
 
-type Operator uint
+type operator uint
 
 const (
-	OpEQ Operator = iota + 1 //	equal
+	OpEQ operator = iota + 1 //	equal
 	OpNE                     //	not equal
 	OpLT                     //	less than
 	OpGT                     //	greater than
@@ -157,33 +158,38 @@ const (
 	OpND                     //	the value is not defined (is NULL)
 )
 
-var opCode = map[Operator]string{
+var opCode = map[operator]string{
 	OpEQ: "EQ", OpNE: "NE", OpLT: "LT", OpGT: "GT", OpLE: "LE",
 	OpGE: "GE", OpRG: "RG", OpRE: "RE", OpDF: "DF", OpND: "ND",
 }
 
-func (op Operator) String() string {
+func (op operator) String() string {
 	if s, ok := opCode[op]; ok {
 		return s
 	}
 	return fmt.Sprintf("InvalidOp(%d)", op)
 }
 
-func C(field string, args ...string) ComparisonExpr {
+func c(field string, args ...string) ComparisonExpr {
 	return ComparisonExpr(strings.Join(append([]string{field}, args...), "|"))
 }
-func EQ(field, value string) ComparisonExpr    { return C(field, OpEQ.String(), value) }
-func NE(field, value string) ComparisonExpr    { return C(field, OpNE.String(), value) }
-func LT(field, value string) ComparisonExpr    { return C(field, OpLT.String(), value) }
-func GT(field, value string) ComparisonExpr    { return C(field, OpGT.String(), value) }
-func LE(field, value string) ComparisonExpr    { return C(field, OpLE.String(), value) }
-func GE(field, value string) ComparisonExpr    { return C(field, OpGE.String(), value) }
-func RG(field, min, max string) ComparisonExpr { return C(field, OpRG.String(), min, max) }
-func RE(field, value string) ComparisonExpr    { return C(field, OpRE.String(), value) }
-func DF(field string) ComparisonExpr           { return C(field, OpDF.String()) }
-func ND(field string) ComparisonExpr           { return C(field, OpND.String()) }
+
+func EQ(field, value string) ComparisonExpr    { return c(field, OpEQ.String(), value) }
+func NE(field, value string) ComparisonExpr    { return c(field, OpNE.String(), value) }
+func LT(field, value string) ComparisonExpr    { return c(field, OpLT.String(), value) }
+func GT(field, value string) ComparisonExpr    { return c(field, OpGT.String(), value) }
+func LE(field, value string) ComparisonExpr    { return c(field, OpLE.String(), value) }
+func GE(field, value string) ComparisonExpr    { return c(field, OpGE.String(), value) }
+func RG(field, min, max string) ComparisonExpr { return c(field, OpRG.String(), min, max) }
+func RE(field, value string) ComparisonExpr    { return c(field, OpRE.String(), value) }
+func DF(field string) ComparisonExpr           { return c(field, OpDF.String()) }
+func ND(field string) ComparisonExpr           { return c(field, OpND.String()) }
 
 type Filter struct {
+	Fields         []string
+	Sort           []string
+	Limit          uint
+	LimitFrom      uint
 	NumberedStatus NumberedStatus
 	Kind           Kind
 	Group          Group
@@ -199,6 +205,18 @@ type Filter struct {
 
 func (f Filter) Values() (url.Values, error) {
 	v := url.Values{}
+	if f.Fields != nil && len(f.Fields) > 0 {
+		v.Set("fields", strings.Join(f.Fields, ","))
+	}
+	if f.Sort != nil && len(f.Sort) > 0 {
+		v.Set("sort", strings.Join(f.Sort, ","))
+	}
+	if f.Limit > 0 {
+		v.Set("limit", strconv.FormatUint(uint64(f.Limit), 10))
+	}
+	if f.LimitFrom > 0 {
+		v.Set("limitFrom", strconv.FormatUint(uint64(f.LimitFrom), 10))
+	}
 	if f.NumberedStatus > NumStatusAny {
 		v.Set("sb-ns", f.NumberedStatus.String())
 	}
@@ -207,6 +225,12 @@ func (f Filter) Values() (url.Values, error) {
 	}
 	if f.Group > GroupAny {
 		v.Set("sb-group", f.Group.String())
+	}
+	if f.MustHaveSatellite {
+		v.Set("sb-sat", strconv.FormatBool(f.MustHaveSatellite))
+	}
+	if f.ExcludeFragments {
+		v.Set("sb-xfrag", strconv.FormatBool(f.ExcludeFragments))
 	}
 	if len(f.Classes) > 0 {
 		v.Set("sb-class", f.Classes.String())
