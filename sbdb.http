@@ -9,4 +9,27 @@ GET https://ssd-api.jpl.nasa.gov/sbdb_query.api?limit=100&fields=H,G,M1,M2,K1,K2
 
 ### Get duplicate field test
 ### This results in a 400 err
-GET https://ssd-api.jpl.nasa.gov/sbdb_query.api?limit=1&fields=spkid,spkid
+GET https://ssd-api.jpl.nasa.gov/sbdb_query.api?
+    limit=1&fields=spkid
+
+### Get One Unnumbered
+GET https://ssd-api.jpl.nasa.gov/sbdb_query.api?
+    limit=1&sb-ns=u&
+    fields=spkid,full_name,kind,pdes,name,prefix,class,neo,pha,sats
+
+### Get One Numbered
+GET https://ssd-api.jpl.nasa.gov/sbdb_query.api?
+    limit=1&sb-ns=n&
+    fields=spkid,full_name,kind,pdes,name,prefix,class,neo,pha,sats
+
+### Get Has Satalites
+GET https://ssd-api.jpl.nasa.gov/sbdb_query.api?
+    limit=10&
+    fields=spkid,full_name,kind,pdes,name,prefix,class,neo,pha,sats&
+    sb-sat=true
+
+### Get Has Satalites - false
+GET https://ssd-api.jpl.nasa.gov/sbdb_query.api?
+    limit=10&limit-from=20&
+    fields=spkid,full_name,kind,pdes,name,prefix,class,neo,pha,sats&
+    sb-sat=false
