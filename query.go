@@ -246,7 +246,7 @@ func (fs FieldSet) Add(field Field) {
 }
 
 // AddFields inserts multiple fields.
-func (fs FieldSet) AddFields(fields []Field) {
+func (fs FieldSet) AddFields(fields ...Field) {
 	for _, f := range fields {
 		fs.Add(f)
 	}
@@ -295,7 +295,7 @@ type Filter struct {
 
 // Values converts the Filter into URL query parameters.
 func (f Filter) Values() (url.Values, error) {
-	if f.Fields == nil || len(f.Fields) <= 0 {
+	if len(f.Fields) <= 0 {
 		return nil, errors.New("must provide at least one field")
 	}
 	if len(f.Classes) > 3 {
