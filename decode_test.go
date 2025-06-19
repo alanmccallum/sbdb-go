@@ -30,8 +30,8 @@ func TestDecode(t *testing.T) {
 			args: args{bytes.NewBufferString(`{"signature":{"version":"1","source":"test"},"fields":["spkid"],"data":[[123]],"count":1}`)},
 			want: &Payload{
 				Signature: struct {
-					Version string "json:\"version\""
-					Source  string "json:\"source\""
+					Version string `json:"version"`
+					Source  string `json:"source"`
 				}{Version: "1", Source: "test"},
 				Fields: []string{"spkid"},
 				Data:   [][]any{{json.Number("123")}},
