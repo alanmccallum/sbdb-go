@@ -13,7 +13,7 @@ import (
 
 var log = slog.Default()
 
-func logFailedTypeAssert(fn, field string, value any) {
+func logFailedTypeAssert(fn, field Field, value any) {
 	log.Debug("Type assertion failed", "fn", fn, "field", field, "value", value)
 }
 
@@ -58,7 +58,7 @@ func (p *Payload) Records() ([]Record, error) {
 		}
 		records[i] = make(Record)
 		for j, v := range b {
-			records[i][p.Fields[j]] = v
+			records[i][Field(p.Fields[j])] = v
 		}
 	}
 
@@ -87,7 +87,7 @@ func (p *Payload) Bodies() ([]Body, error) {
 }
 
 // Record represents a single result row as a map of field names to values.
-type Record map[string]any
+type Record map[Field]any
 
 func (r Record) identity() Identity {
 	return Identity{
@@ -206,7 +206,7 @@ func (r Record) physical() Physical {
 	}
 }
 
-func (r Record) getFloat(field string) *float64 {
+func (r Record) getFloat(field Field) *float64 {
 	if r[field] == nil {
 		return nil
 	}
@@ -230,7 +230,7 @@ func (r Record) getFloat(field string) *float64 {
 		return nil
 	}
 }
-func (r Record) getInt(field string) *int {
+func (r Record) getInt(field Field) *int {
 	if r[field] == nil {
 		return nil
 	}
@@ -264,7 +264,7 @@ func (r Record) getInt(field string) *int {
 		return nil
 	}
 }
-func (r Record) getString(field string) *string {
+func (r Record) getString(field Field) *string {
 	if r[field] == nil {
 		return nil
 	}
@@ -283,7 +283,7 @@ func (r Record) getString(field string) *string {
 		return &s
 	}
 }
-func (r Record) getBool(field string) *bool {
+func (r Record) getBool(field Field) *bool {
 	if r[field] == nil {
 		return nil
 	}

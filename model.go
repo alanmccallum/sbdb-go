@@ -1,115 +1,139 @@
 package sbdb
 
+import "strings"
+
+// TODO: Create Field type with stringer
+
+type Field string
+type Fields []Field
+
+func (f Field) String() string {
+	return string(f)
+}
+func (f Fields) String() string {
+	var s = make([]string, len(f))
+	for i, field := range f {
+		s[i] = field.String()
+	}
+	return strings.Join(s, ",")
+}
+
 // Identity field names representing SBDB response fields.
 const (
-	SpkID       = "spkid"     // SPICE identifier for the body
-	FullName    = "full_name" // Complete object designation
-	Kind        = "kind"      // Body kind, e.g. asteroid or comet
-	PDES        = "pdes"      // Primary designation
-	Name        = "name"      // IAU name
-	Prefix      = "prefix"    // Numbered prefix
-	Class       = "class"     // Dynamical class
-	NEO         = "neo"       // Near Earth Object flag
-	PHA         = "pha"       // Potentially Hazardous Asteroid flag
-	Sats        = "sats"      // Number of known satellites
-	TJupiter    = "t_jup"     // Tisserand parameter w.r.t. Jupiter
-	MOID        = "moid"      // Earth minimum orbit intersection distance (au)
-	MOIDLD      = "moid_ld"   // Earth MOID in lunar distances
-	MOIDJupiter = "moid_jup"  // Jupiter MOID (au)
+	SpkID       Field = "spkid"     // SPICE identifier for the body
+	FullName    Field = "full_name" // Complete object designation
+	Kind        Field = "kind"      // Body kind, e.g. asteroid or comet
+	PDES        Field = "pdes"      // Primary designation
+	Name        Field = "name"      // IAU name
+	Prefix      Field = "prefix"    // Numbered prefix
+	Class       Field = "class"     // Dynamical class
+	NEO         Field = "neo"       // Near Earth Object flag
+	PHA         Field = "pha"       // Potentially Hazardous Asteroid flag
+	Sats        Field = "sats"      // Number of known satellites
+	TJupiter    Field = "t_jup"     // Tisserand parameter w.r.t. Jupiter
+	MOID        Field = "moid"      // Earth minimum orbit intersection distance (au)
+	MOIDLD      Field = "moid_ld"   // Earth MOID in lunar distances
+	MOIDJupiter Field = "moid_jup"  // Jupiter MOID (au)
 )
+
+func IdentityFields() []Field {
+	return []Field{
+		SpkID, FullName, Kind, PDES, Name, Prefix, Class, NEO, PHA, Sats, TJupiter, MOID, MOIDLD, MOIDJupiter,
+	}
+}
 
 // Orbit field names representing SBDB response fields.
 const (
-	OrbitID          = "orbit_id"  // Orbit solution identifier
-	Epoch            = "epoch"     // Reference epoch (JD)
-	EpochMJD         = "epoch_mjd" // Reference epoch (MJD)
-	EpochCal         = "epoch_cal" // Reference epoch (calendar)
-	Equinox          = "equinox"   // Reference frame
-	Eccentricity     = "e"         // Orbital eccentricity
-	SemimajorAxis    = "a"         // Semi-major axis (au)
-	PerihelionDist   = "q"         // Perihelion distance (au)
-	Inclination      = "i"         // Inclination to the ecliptic (deg)
-	AscNode          = "om"        // Longitude of ascending node (deg)
-	PeriapsisArg     = "w"         // Argument of periapsis (deg)
-	MeanAnomaly      = "ma"        // Mean anomaly at epoch (deg)
-	PeriapsisTime    = "tp"        // Time of periapsis passage (JD)
-	PeriapsisTimeCal = "tp_cal"    // Time of periapsis passage (calendar)
-	OrbitalPeriod    = "per"       // Orbital period (days)
-	OrbitalPeriodYr  = "per_y"     // Orbital period (years)
-	MeanMotion       = "n"         // Mean motion (deg/day)
-	AphelionDist     = "ad"        // Aphelion distance (au)
+	OrbitID          Field = "orbit_id"  // Orbit solution identifier
+	Epoch            Field = "epoch"     // Reference epoch (JD)
+	EpochMJD         Field = "epoch_mjd" // Reference epoch (MJD)
+	EpochCal         Field = "epoch_cal" // Reference epoch (calendar)
+	Equinox          Field = "equinox"   // Reference frame
+	Eccentricity     Field = "e"         // Orbital eccentricity
+	SemimajorAxis    Field = "a"         // Semi-major axis (au)
+	PerihelionDist   Field = "q"         // Perihelion distance (au)
+	Inclination      Field = "i"         // Inclination to the ecliptic (deg)
+	AscNode          Field = "om"        // Longitude of ascending node (deg)
+	PeriapsisArg     Field = "w"         // Argument of periapsis (deg)
+	MeanAnomaly      Field = "ma"        // Mean anomaly at epoch (deg)
+	PeriapsisTime    Field = "tp"        // Time of periapsis passage (JD)
+	PeriapsisTimeCal Field = "tp_cal"    // Time of periapsis passage (calendar)
+	OrbitalPeriod    Field = "per"       // Orbital period (days)
+	OrbitalPeriodYr  Field = "per_y"     // Orbital period (years)
+	MeanMotion       Field = "n"         // Mean motion (deg/day)
+	AphelionDist     Field = "ad"        // Aphelion distance (au)
 )
 
 // Uncertainty field names representing SBDB response fields.
 const (
-	SigmaEcc     = "sigma_e"   // 1-sigma uncertainty of eccentricity
-	SigmaA       = "sigma_a"   // 1-sigma uncertainty of semi-major axis (au)
-	SigmaQ       = "sigma_q"   // 1-sigma uncertainty of perihelion distance (au)
-	SigmaI       = "sigma_i"   // 1-sigma uncertainty of inclination (deg)
-	SigmaAscNode = "sigma_om"  // 1-sigma uncertainty of ascending node (deg)
-	SigmaPeriArg = "sigma_w"   // 1-sigma uncertainty of periapsis argument (deg)
-	SigmaTP      = "sigma_tp"  // 1-sigma uncertainty of time of periapsis (JD)
-	SigmaMA      = "sigma_ma"  // 1-sigma uncertainty of mean anomaly (deg)
-	SigmaPeriod  = "sigma_per" // 1-sigma uncertainty of orbital period (days)
-	SigmaN       = "sigma_n"   // 1-sigma uncertainty of mean motion (deg/day)
-	SigmaAD      = "sigma_ad"  // 1-sigma uncertainty of aphelion distance (au)
+	SigmaEcc     Field = "sigma_e"   // 1-sigma uncertainty of eccentricity
+	SigmaA       Field = "sigma_a"   // 1-sigma uncertainty of semi-major axis (au)
+	SigmaQ       Field = "sigma_q"   // 1-sigma uncertainty of perihelion distance (au)
+	SigmaI       Field = "sigma_i"   // 1-sigma uncertainty of inclination (deg)
+	SigmaAscNode Field = "sigma_om"  // 1-sigma uncertainty of ascending node (deg)
+	SigmaPeriArg Field = "sigma_w"   // 1-sigma uncertainty of periapsis argument (deg)
+	SigmaTP      Field = "sigma_tp"  // 1-sigma uncertainty of time of periapsis (JD)
+	SigmaMA      Field = "sigma_ma"  // 1-sigma uncertainty of mean anomaly (deg)
+	SigmaPeriod  Field = "sigma_per" // 1-sigma uncertainty of orbital period (days)
+	SigmaN       Field = "sigma_n"   // 1-sigma uncertainty of mean motion (deg/day)
+	SigmaAD      Field = "sigma_ad"  // 1-sigma uncertainty of aphelion distance (au)
 )
 
 // Solution field names representing SBDB response fields.
 const (
-	Source         = "source"         // Source of orbit solution
-	SolutionDate   = "soln_date"      // Solution date
-	Producer       = "producer"       // Producer of orbit solution
-	DataArc        = "data_arc"       // Data-arc span (days)
-	FirstObs       = "first_obs"      // First observation date
-	LastObs        = "last_obs"       // Last observation date
-	ObsUsed        = "n_obs_used"     // Number of observations used
-	DelayObsUsed   = "n_del_obs_used" // Number of delay observations used
-	DopplerObsUsed = "n_dop_obs_used" // Number of Doppler observations used
-	TwoBody        = "two_body"       // Two-body approximation flag
-	PEUsed         = "pe_used"        // Planetary ephemeris used
-	SBUsed         = "sb_used"        // Small-body perturbers used
-	ConditionCode  = "condition_code" // Orbit uncertainty condition code
-	RMS            = "rms"            // RMS residual (arcsec)
+	Source         Field = "source"         // Source of orbit solution
+	SolutionDate   Field = "soln_date"      // Solution date
+	Producer       Field = "producer"       // Producer of orbit solution
+	DataArc        Field = "data_arc"       // Data-arc span (days)
+	FirstObs       Field = "first_obs"      // First observation date
+	LastObs        Field = "last_obs"       // Last observation date
+	ObsUsed        Field = "n_obs_used"     // Number of observations used
+	DelayObsUsed   Field = "n_del_obs_used" // Number of delay observations used
+	DopplerObsUsed Field = "n_dop_obs_used" // Number of Doppler observations used
+	TwoBody        Field = "two_body"       // Two-body approximation flag
+	PEUsed         Field = "pe_used"        // Planetary ephemeris used
+	SBUsed         Field = "sb_used"        // Small-body perturbers used
+	ConditionCode  Field = "condition_code" // Orbit uncertainty condition code
+	RMS            Field = "rms"            // RMS residual (arcsec)
 )
 
 // NonGrav field names representing SBDB response fields.
 const (
-	A1      = "A1"       // Non-gravitational acceleration parameter A1 (au/d^2)
-	A2      = "A2"       // Non-gravitational acceleration parameter A2 (au/d^2)
-	A3      = "A3"       // Non-gravitational acceleration parameter A3 (au/d^2)
-	DT      = "DT"       // Non-gravitational time parameter (days)
-	S0      = "S0"       // Non-gravitational scale factor
-	A1Sigma = "A1_sigma" // 1-sigma uncertainty of A1 (au/d^2)
-	A2Sigma = "A2_sigma" // 1-sigma uncertainty of A2 (au/d^2)
-	A3Sigma = "A3_sigma" // 1-sigma uncertainty of A3 (au/d^2)
-	DTSigma = "DT_sigma" // 1-sigma uncertainty of DT (days)
-	S0Sigma = "S0_sigma" // 1-sigma uncertainty of S0
+	A1      Field = "A1"       // Non-gravitational acceleration parameter A1 (au/d^2)
+	A2      Field = "A2"       // Non-gravitational acceleration parameter A2 (au/d^2)
+	A3      Field = "A3"       // Non-gravitational acceleration parameter A3 (au/d^2)
+	DT      Field = "DT"       // Non-gravitational time parameter (days)
+	S0      Field = "S0"       // Non-gravitational scale factor
+	A1Sigma Field = "A1_sigma" // 1-sigma uncertainty of A1 (au/d^2)
+	A2Sigma Field = "A2_sigma" // 1-sigma uncertainty of A2 (au/d^2)
+	A3Sigma Field = "A3_sigma" // 1-sigma uncertainty of A3 (au/d^2)
+	DTSigma Field = "DT_sigma" // 1-sigma uncertainty of DT (days)
+	S0Sigma Field = "S0_sigma" // 1-sigma uncertainty of S0
 )
 
 // Physical field names representing SBDB response fields.
 const (
-	H             = "H"              // Absolute magnitude H
-	G             = "G"              // Photometric slope parameter G
-	M1            = "M1"             // Photometric parameter M1
-	K1            = "K1"             // Photometric parameter K1
-	M2            = "M2"             // Photometric parameter M2
-	K2            = "K2"             // Photometric parameter K2
-	PC            = "PC"             // Photometric color index PC
-	HSigma        = "H_sigma"        // 1-sigma uncertainty of H
-	Diameter      = "diameter"       // Diameter (km)
-	Extent        = "extent"         // Physical extent (km)
-	GM            = "GM"             // Gravitational parameter (km^3/s^2)
-	Density       = "density"        // Bulk density (g/cm^3)
-	RotPer        = "rot_per"        // Rotation period (hours)
-	Pole          = "pole"           // Pole orientation (deg)
-	Albedo        = "albedo"         // Geometric albedo
-	BV            = "BV"             // B-V color index
-	UB            = "UB"             // U-B color index
-	IR            = "IR"             // Infrared color index
-	SpecT         = "spec_T"         // Spectral taxonomy
-	SpecB         = "spec_B"         // Spectral bin
-	DiameterSigma = "diameter_sigma" // 1-sigma uncertainty of diameter (km)
+	H             Field = "H"              // Absolute magnitude H
+	G             Field = "G"              // Photometric slope parameter G
+	M1            Field = "M1"             // Photometric parameter M1
+	K1            Field = "K1"             // Photometric parameter K1
+	M2            Field = "M2"             // Photometric parameter M2
+	K2            Field = "K2"             // Photometric parameter K2
+	PC            Field = "PC"             // Photometric color index PC
+	HSigma        Field = "H_sigma"        // 1-sigma uncertainty of H
+	Diameter      Field = "diameter"       // Diameter (km)
+	Extent        Field = "extent"         // Physical extent (km)
+	GM            Field = "GM"             // Gravitational parameter (km^3/s^2)
+	Density       Field = "density"        // Bulk density (g/cm^3)
+	RotPer        Field = "rot_per"        // Rotation period (hours)
+	Pole          Field = "pole"           // Pole orientation (deg)
+	Albedo        Field = "albedo"         // Geometric albedo
+	BV            Field = "BV"             // B-V color index
+	UB            Field = "UB"             // U-B color index
+	IR            Field = "IR"             // Infrared color index
+	SpecT         Field = "spec_T"         // Spectral taxonomy
+	SpecB         Field = "spec_B"         // Spectral bin
+	DiameterSigma Field = "diameter_sigma" // 1-sigma uncertainty of diameter (km)
 )
 
 // Body represents a small-body record from the SBDB Query API.

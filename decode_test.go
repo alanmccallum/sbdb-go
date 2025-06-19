@@ -208,7 +208,7 @@ func TestPayload_Records(t *testing.T) {
 
 func TestRecord_getBool(t *testing.T) {
 	type args struct {
-		field string
+		field Field
 	}
 	tests := []struct {
 		name string
@@ -300,7 +300,7 @@ func TestRecord_getBool(t *testing.T) {
 
 func TestRecord_getFloat(t *testing.T) {
 	type args struct {
-		field string
+		field Field
 	}
 	tests := []struct {
 		name string
@@ -368,7 +368,7 @@ func TestRecord_getFloat(t *testing.T) {
 
 func TestRecord_getInt(t *testing.T) {
 	type args struct {
-		field string
+		field Field
 	}
 	tests := []struct {
 		name string
@@ -436,7 +436,7 @@ func TestRecord_getInt(t *testing.T) {
 
 func TestRecord_getString(t *testing.T) {
 	type args struct {
-		field string
+		field Field
 	}
 	tests := []struct {
 		name string

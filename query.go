@@ -1,23 +1,24 @@
-package query
+package sbdb
 
 import (
 	"encoding/json"
 	"errors"
 	"fmt"
 	"net/url"
+	"sort"
 	"strconv"
 	"strings"
 )
 
-type NumberedStatus uint
+type SBNS uint
 
 const (
-	NumStatusAny NumberedStatus = iota
+	NumStatusAny SBNS = iota
 	NumStatusNumbered
 	NumStatusUnnumbered
 )
 
-func (n NumberedStatus) String() string {
+func (n SBNS) String() string {
 	switch n {
 	case NumStatusAny:
 		return ""
@@ -26,19 +27,19 @@ func (n NumberedStatus) String() string {
 	case NumStatusUnnumbered:
 		return "u"
 	default:
-		return fmt.Sprintf("Invalid NumberedStatus(%d)", n)
+		return fmt.Sprintf("Invalid SBNS(%d)", n)
 	}
 }
 
-type Kind uint
+type SBKind uint
 
 const (
-	KindAny Kind = iota
+	KindAny SBKind = iota
 	KindAsteroid
 	KindComet
 )
 
-func (k Kind) String() string {
+func (k SBKind) String() string {
 	switch k {
 	case KindAny:
 		return ""
@@ -47,19 +48,19 @@ func (k Kind) String() string {
 	case KindComet:
 		return "c"
 	default:
-		return fmt.Sprintf("Invalid Kind(%d)", k)
+		return fmt.Sprintf("Invalid SBKind(%d)", k)
 	}
 }
 
-type Group uint
+type SGGroup uint
 
 const (
-	GroupAny Group = iota
+	GroupAny SGGroup = iota
 	GroupNEO
 	GroupPHA
 )
 
-func (g Group) String() string {
+func (g SGGroup) String() string {
 	switch g {
 	case GroupAny:
 		return ""
@@ -68,53 +69,53 @@ func (g Group) String() string {
 	case GroupPHA:
 		return "pha"
 	default:
-		return fmt.Sprintf("Invalid Group(%d)", g)
+		return fmt.Sprintf("Invalid SGGroup(%d)", g)
 	}
 }
 
-type Class uint
-type Classes []Class
+type SBClass uint
+type SBClasses []SBClass
 
 const (
-	IEO Class = iota + 1 // Atira
-	ATE                  // Aten
-	APO                  // Apollo
-	AMO                  // Amor
-	MCA                  // Mars-crossing Asteroid
-	IMB                  // Inner Main-belt Asteroid
-	MBA                  // Main-belt Asteroid
-	OMB                  // Outer Main-belt Asteroid
-	TJN                  // Jupiter Trojan
-	AST                  // Asteroid
-	CEN                  // Centaur
-	TNO                  // TransNeptunian Object
-	PAA                  // Parabolic “Asteroid”
-	HYA                  // Hyperbolic “Asteroid”
-	ETc                  // Encke-type Comet
-	JFc                  // Jupiter-family Comet
-	JFC                  // Jupiter-family Comet*
-	CTc                  // Chiron-type Comet
-	HTC                  // Halley-type Comet*
-	PAR                  // Parabolic Comet
-	HYP                  // Hyperbolic Comet
-	COM                  // Comet
+	IEO SBClass = iota + 1 // Atira
+	ATE                    // Aten
+	APO                    // Apollo
+	AMO                    // Amor
+	MCA                    // Mars-crossing Asteroid
+	IMB                    // Inner Main-belt Asteroid
+	MBA                    // Main-belt Asteroid
+	OMB                    // Outer Main-belt Asteroid
+	TJN                    // Jupiter Trojan
+	AST                    // Asteroid
+	CEN                    // Centaur
+	TNO                    // TransNeptunian Object
+	PAA                    // Parabolic “Asteroid”
+	HYA                    // Hyperbolic “Asteroid”
+	ETc                    // Encke-type Comet
+	JFc                    // Jupiter-family Comet
+	JFC                    // Jupiter-family Comet*
+	CTc                    // Chiron-type Comet
+	HTC                    // Halley-type Comet*
+	PAR                    // Parabolic Comet
+	HYP                    // Hyperbolic Comet
+	COM                    // Comet
 )
 
-var classCodes = map[Class]string{
+var classCodes = map[SBClass]string{
 	IEO: "IEO", ATE: "ATE", APO: "APO", AMO: "AMO", MCA: "MCA", IMB: "IMB",
 	MBA: "MBA", OMB: "OMB", TJN: "TJN", AST: "AST", CEN: "CEN", TNO: "TNO",
 	PAA: "PAA", HYA: "HYA", ETc: "ETc", JFc: "JFc", JFC: "JFC", CTc: "CTc",
 	HTC: "HTC", PAR: "PAR", HYP: "HYP", COM: "COM",
 }
 
-func (c Class) String() string {
+func (c SBClass) String() string {
 	if s, ok := classCodes[c]; ok {
 		return s
 	}
-	return fmt.Sprintf("Invalid Class(%d)", c)
+	return fmt.Sprintf("Invalid SBClass(%d)", c)
 }
 
-func (c Classes) String() string {
+func (c SBClasses) String() string {
 	parts := make([]string, len(c))
 	for i, class := range c {
 		parts[i] = class.String()
@@ -182,17 +183,51 @@ func RE(field, value string) ComparisonExpr    { return c(field, OpRE.String(), 
 func DF(field string) ComparisonExpr           { return c(field, OpDF.String()) }
 func ND(field string) ComparisonExpr           { return c(field, OpND.String()) }
 
+type FieldSet map[string]struct{}
+
+func NewFieldSet(fields ...Field) FieldSet {
+	fs := FieldSet{}
+	for _, f := range fields {
+		fs.Add(f)
+	}
+	return fs
+}
+
+func (fs FieldSet) Add(field Field) {
+	fs[field.String()] = struct{}{}
+}
+func (fs FieldSet) Remove(field Field) {
+	delete(fs, field.String())
+}
+func (fs FieldSet) List() []string {
+	out := make([]string, 0, len(fs))
+	for f := range fs {
+		out = append(out, f)
+	}
+	sort.Strings(out) // Optional: stable ordering
+	return out
+}
+func (fs FieldSet) String() string {
+	return strings.Join(fs.List(), ",")
+}
+
+func (fs FieldSet) AddIdentityFields() {
+	for _, f := range IdentityFields() {
+		fs.Add(f)
+	}
+}
+
 type Filter struct {
-	Fields         []string
-	Sort           []string
+	Fields         FieldSet
+	Sort           Fields
 	Limit          uint
 	LimitFrom      uint
-	NumberedStatus NumberedStatus
-	Kind           Kind
-	Group          Group
-	// Class, limit results by up to 3 orbital classes
+	NumberedStatus SBNS
+	Kind           SBKind
+	Group          SGGroup
+	// SBClass, limit results by up to 3 orbital classes
 	// Refer to orbit class table at https://ssd-api.jpl.nasa.gov/doc/sbdb_filter.html
-	Classes Classes
+	Classes SBClasses
 	// MustHaveSatellite, when true, will filter for bodies with at least one know satellite.
 	MustHaveSatellite bool
 	// ExcludeFragments, when true, will exclude all comet fragments from results.
@@ -201,27 +236,26 @@ type Filter struct {
 }
 
 func (f Filter) Values() (url.Values, error) {
-	if f.Fields == nil || len(f.Fields) < 0 {
+	if f.Fields == nil || len(f.Fields) <= 0 {
 		return nil, errors.New("must provide at least one field")
 	}
 	if len(f.Sort) > 3 {
 		return nil, fmt.Errorf("len(Sort) = %d, max = 3", len(f.Sort))
 	}
 	if len(f.Classes) > 3 {
-		return nil, fmt.Errorf("len(Classes) = %d, max = 3", len(f.Classes))
+		return nil, fmt.Errorf("len(SBClasses) = %d, max = 3", len(f.Classes))
 	}
 
 	v := url.Values{}
-	v.Set("fields", strings.Join(f.Fields, ","))
-
+	v.Set("fields", f.Fields.String())
 	if len(f.Sort) > 0 {
-		v.Set("sort", strings.Join(f.Sort, ","))
+		v.Set("sort", f.Sort.String())
 	}
 	if f.Limit > 0 {
 		v.Set("limit", strconv.FormatUint(uint64(f.Limit), 10))
 	}
 	if f.LimitFrom > 0 {
-		v.Set("limitFrom", strconv.FormatUint(uint64(f.LimitFrom), 10))
+		v.Set("limit-from", strconv.FormatUint(uint64(f.LimitFrom), 10))
 	}
 	if f.NumberedStatus > NumStatusAny {
 		v.Set("sb-ns", f.NumberedStatus.String())
