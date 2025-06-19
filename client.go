@@ -29,6 +29,9 @@ func (c *Client) Get(ctx context.Context, f Filter) (*http.Response, error) {
 	}
 
 	req, err := http.NewRequestWithContext(ctx, "GET", u.String(), nil)
+	if err != nil {
+		return nil, err
+	}
 
 	resp, err := c.Client.Do(req)
 	if err != nil {
