@@ -10,11 +10,16 @@ import (
 	"strings"
 )
 
+// NumStatusFilter limits results by numbered status.
+// See the SBDB Query API documentation for details on each status code.
 type NumStatusFilter uint
 
 const (
+	// NumStatusAny returns all records regardless of numbering.
 	NumStatusAny NumStatusFilter = iota
+	// NumStatusNumbered restricts results to numbered bodies.
 	NumStatusNumbered
+	// NumStatusUnnumbered restricts results to provisional designations.
 	NumStatusUnnumbered
 )
 
@@ -31,11 +36,16 @@ func (n NumStatusFilter) String() string {
 	}
 }
 
+// KindFilter restricts results to asteroids or comets.
+// The zero value includes both kinds.
 type KindFilter uint
 
 const (
+	// KindAny does not filter by kind.
 	KindAny KindFilter = iota
+	// KindAsteroid returns asteroid records only.
 	KindAsteroid
+	// KindComet returns comet records only.
 	KindComet
 )
 
@@ -52,11 +62,16 @@ func (k KindFilter) String() string {
 	}
 }
 
+// GroupFilter narrows results to common NEO and PHA groups.
+// The zero value does not apply group filtering.
 type GroupFilter uint
 
 const (
+	// GroupAny performs no group filtering.
 	GroupAny GroupFilter = iota
+	// GroupNEO filters for near-Earth objects.
 	GroupNEO
+	// GroupPHA filters for potentially hazardous asteroids.
 	GroupPHA
 )
 
@@ -73,7 +88,11 @@ func (g GroupFilter) String() string {
 	}
 }
 
+// ClassFilter restricts results by orbit class.
+// Class codes correspond to those documented in the SBDB API.
 type ClassFilter uint
+
+// ClassFilters is a collection of ClassFilter values.
 type ClassFilters []ClassFilter
 
 const (
@@ -123,12 +142,18 @@ func (c ClassFilters) String() string {
 	return strings.Join(parts, ",")
 }
 
+// Expr represents a filter expression that can be marshaled to JSON.
 type Expr interface {
 	MarshalJSON() ([]byte, error)
 }
 
+// And groups expressions that must all evaluate to true.
 type And []Expr
+
+// Or groups expressions where at least one must evaluate to true.
 type Or []Expr
+
+// ComparisonExpr encodes a single comparison operator expression.
 type ComparisonExpr string
 
 func (a And) MarshalJSON() ([]byte, error) {
@@ -172,19 +197,41 @@ func c(field string, args ...string) ComparisonExpr {
 	return ComparisonExpr(strings.Join(append([]string{field}, args...), "|"))
 }
 
-func EQ(field, value string) ComparisonExpr    { return c(field, OpEQ.String(), value) }
-func NE(field, value string) ComparisonExpr    { return c(field, OpNE.String(), value) }
-func LT(field, value string) ComparisonExpr    { return c(field, OpLT.String(), value) }
-func GT(field, value string) ComparisonExpr    { return c(field, OpGT.String(), value) }
-func LE(field, value string) ComparisonExpr    { return c(field, OpLE.String(), value) }
-func GE(field, value string) ComparisonExpr    { return c(field, OpGE.String(), value) }
-func RG(field, min, max string) ComparisonExpr { return c(field, OpRG.String(), min, max) }
-func RE(field, value string) ComparisonExpr    { return c(field, OpRE.String(), value) }
-func DF(field string) ComparisonExpr           { return c(field, OpDF.String()) }
-func ND(field string) ComparisonExpr           { return c(field, OpND.String()) }
+// EQ creates an equality comparison expression.
+func EQ(field, value string) ComparisonExpr { return c(field, OpEQ.String(), value) }
 
+// NE creates a not-equal comparison expression.
+func NE(field, value string) ComparisonExpr { return c(field, OpNE.String(), value) }
+
+// LT creates a less-than comparison expression.
+func LT(field, value string) ComparisonExpr { return c(field, OpLT.String(), value) }
+
+// GT creates a greater-than comparison expression.
+func GT(field, value string) ComparisonExpr { return c(field, OpGT.String(), value) }
+
+// LE creates a less-than-or-equal comparison expression.
+func LE(field, value string) ComparisonExpr { return c(field, OpLE.String(), value) }
+
+// GE creates a greater-than-or-equal comparison expression.
+func GE(field, value string) ComparisonExpr { return c(field, OpGE.String(), value) }
+
+// RG creates an inclusive range comparison expression.
+func RG(field, min, max string) ComparisonExpr { return c(field, OpRG.String(), min, max) }
+
+// RE creates a regular-expression comparison expression.
+func RE(field, value string) ComparisonExpr { return c(field, OpRE.String(), value) }
+
+// DF checks that a field is defined.
+func DF(field string) ComparisonExpr { return c(field, OpDF.String()) }
+
+// ND checks that a field is not defined.
+func ND(field string) ComparisonExpr { return c(field, OpND.String()) }
+
+// FieldSet represents the list of fields requested from the API.
+// It ensures stable ordering when encoded into a query string.
 type FieldSet map[string]struct{}
 
+// NewFieldSet returns a FieldSet initialized with the provided fields.
 func NewFieldSet(fields ...Field) FieldSet {
 	fs := FieldSet{}
 	for _, f := range fields {
@@ -193,17 +240,24 @@ func NewFieldSet(fields ...Field) FieldSet {
 	return fs
 }
 
+// Add inserts a field into the set.
 func (fs FieldSet) Add(field Field) {
 	fs[field.String()] = struct{}{}
 }
+
+// AddFields inserts multiple fields.
 func (fs FieldSet) AddFields(fields []Field) {
 	for _, f := range fields {
 		fs.Add(f)
 	}
 }
+
+// Remove deletes a field from the set.
 func (fs FieldSet) Remove(field Field) {
 	delete(fs, field.String())
 }
+
+// List returns the fields in sorted order.
 func (fs FieldSet) List() []string {
 	out := make([]string, 0, len(fs))
 	for f := range fs {
@@ -212,10 +266,14 @@ func (fs FieldSet) List() []string {
 	sort.Strings(out) // Optional: stable ordering
 	return out
 }
+
+// String implements fmt.Stringer and returns a comma separated field list.
 func (fs FieldSet) String() string {
 	return strings.Join(fs.List(), ",")
 }
 
+// Filter defines the search parameters for a query. It mirrors the
+// parameters described in the SBDB Query API documentation.
 type Filter struct {
 	Fields         FieldSet
 	Limit          uint
@@ -230,9 +288,12 @@ type Filter struct {
 	MustHaveSatellite bool
 	// ExcludeFragments, when true, will exclude all comet fragments from results.
 	ExcludeFragments bool
+	// FieldConstraints applies advanced field-level filters encoded as
+	// AND/OR expressions. See the SBDB filter documentation for syntax.
 	FieldConstraints Expr
 }
 
+// Values converts the Filter into URL query parameters.
 func (f Filter) Values() (url.Values, error) {
 	if f.Fields == nil || len(f.Fields) <= 0 {
 		return nil, errors.New("must provide at least one field")

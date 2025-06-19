@@ -1,4 +1,10 @@
-sbdb-go is a Go library for working with NASA JPL's Small-Body Database (SBDB) Query API. It decodes JSON responses into convenient Go structures so you can inspect results programmatically.
+sbdb-go is a Go library for interacting with NASA JPL's Small-Body Database (SBDB) Query API. It provides a query builder and decoders so you can inspect results programmatically.
+
+### Features
+- Build SBDB queries using a typed `Filter` API
+- Decode responses into rich Go structs
+- Works with the [SBDB Query API](https://ssd-api.jpl.nasa.gov/doc/sbdb_query.html)
+- Supports advanced field filtering as described in the [SBDB filter documentation](https://ssd-api.jpl.nasa.gov/doc/sbdb_filter.html)
 
 ## Installation
 
@@ -9,7 +15,12 @@ go get github.com/alanmccallum/sbdb-go
 ## Quickstart
 
 ```go
-resp, err := http.Get("https://ssd-api.jpl.nasa.gov/sbdb_query.api?limit=1&fields=spkid,full_name")
+c := &sbdb.Client{}
+f := sbdb.Filter{
+    Fields: sbdb.NewFieldSet(sbdb.SpkID, sbdb.FullName),
+    Limit:  1,
+}
+resp, err := c.Get(f)
 if err != nil {
     log.Fatal(err)
 }
@@ -19,7 +30,6 @@ p, err := sbdb.Decode(resp.Body)
 if err != nil {
     log.Fatal(err)
 }
-
 bodies, err := p.Bodies()
 if err != nil {
     log.Fatal(err)
@@ -31,6 +41,8 @@ fmt.Println(*bodies[0].Identity.FullName)
 ## Usage
 
 `sbdb.Decode` reads a JSON payload and returns a `Payload` containing the raw data. Use `Payload.Records` to get a slice of generic map-based records or `Payload.Bodies` to populate the strongly typed `Body` struct.
+
+The `Filter` type and helper functions allow you to build complex queries in Go. Field names mirror those documented by the [SBDB Query API](https://ssd-api.jpl.nasa.gov/doc/sbdb_query.html) and [filter syntax](https://ssd-api.jpl.nasa.gov/doc/sbdb_filter.html).
 
 Constants such as `sbdb.SpkID`, `sbdb.NEO`, and others mirror the field names used by the SBDB API. These can be helpful when constructing queries or inspecting `Record` values.
 
