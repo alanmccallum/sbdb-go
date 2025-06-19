@@ -2,13 +2,36 @@ package sbdb
 
 import (
 	"context"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"strings"
 	"testing"
+	"time"
 
 	"github.com/google/go-cmp/cmp"
 )
+
+// roundTripperFunc allows customizing http.Client behavior in tests.
+type roundTripperFunc func(*http.Request) (*http.Response, error)
+
+func (f roundTripperFunc) RoundTrip(r *http.Request) (*http.Response, error) {
+	return f(r)
+}
+
+type recordCloser struct {
+	io.ReadCloser
+	closed bool
+}
+
+func (rc *recordCloser) Close() error {
+	rc.closed = true
+	if rc.ReadCloser != nil {
+		return rc.ReadCloser.Close()
+	}
+	return nil
+}
 
 func TestClient_GetURL(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
@@ -90,6 +113,44 @@ func TestClient_Get(t *testing.T) {
 		c := &Client{Endpoint: "://bad url"}
 		if _, err := c.Get(context.Background(), Filter{Fields: NewFieldSet(SpkID)}); err == nil {
 			t.Fatal("expected error for bad endpoint")
+		}
+	})
+
+	t.Run("context canceled", func(t *testing.T) {
+		srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			time.Sleep(50 * time.Millisecond)
+			w.WriteHeader(http.StatusOK)
+		}))
+		defer srv.Close()
+
+		c := &Client{Endpoint: srv.URL}
+		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Millisecond)
+		defer cancel()
+
+		if _, err := c.Get(ctx, Filter{Fields: NewFieldSet(SpkID), Limit: 1}); err == nil {
+			t.Fatal("expected error when context is canceled")
+		}
+	})
+
+	t.Run("http 500", func(t *testing.T) {
+		var rc *recordCloser
+		rt := roundTripperFunc(func(r *http.Request) (*http.Response, error) {
+			rc = &recordCloser{ReadCloser: io.NopCloser(strings.NewReader("boom"))}
+			return &http.Response{
+				StatusCode: http.StatusInternalServerError,
+				Body:       rc,
+				Header:     make(http.Header),
+				Request:    r,
+			}, nil
+		})
+
+		c := &Client{Client: http.Client{Transport: rt}, Endpoint: "http://example.com"}
+		_, err := c.Get(context.Background(), Filter{Fields: NewFieldSet(SpkID), Limit: 1})
+		if err == nil {
+			t.Fatal("expected error for http 500")
+		}
+		if rc != nil && !rc.closed {
+			t.Error("expected response body to be closed")
 		}
 	})
 }
