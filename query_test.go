@@ -112,18 +112,18 @@ func TestComparisonExpr_MarshalJSON(t *testing.T) {
 func TestClass_String(t *testing.T) {
 	tests := []struct {
 		name string
-		c    SBClass
+		c    ClassFilter
 		want string
 	}{
 		{
 			name: "Out of Range 0",
 			c:    0,
-			want: "Invalid SBClass(0)",
+			want: "Invalid ClassFilter(0)",
 		},
 		{
 			name: "Out of Range (High)",
 			c:    999,
-			want: "Invalid SBClass(999)",
+			want: "Invalid ClassFilter(999)",
 		},
 		{
 			name: "IEO",
@@ -143,27 +143,27 @@ func TestClass_String(t *testing.T) {
 func TestClasses_String(t *testing.T) {
 	tests := []struct {
 		name string
-		c    SBClasses
+		c    ClassFilters
 		want string
 	}{
 		{
-			name: "No SBClass",
-			c:    SBClasses{},
+			name: "No ClassFilter",
+			c:    ClassFilters{},
 			want: "",
 		},
 		{
-			name: "One SBClass",
-			c:    SBClasses{IEO},
+			name: "One ClassFilter",
+			c:    ClassFilters{IEO},
 			want: "IEO",
 		},
 		{
-			name: "Two SBClasses",
-			c:    SBClasses{IEO, ATE},
+			name: "Two ClassFilters",
+			c:    ClassFilters{IEO, ATE},
 			want: "IEO,ATE",
 		},
 		{
-			name: "Three SBClasses",
-			c:    SBClasses{IEO, ATE, APO},
+			name: "Three ClassFilters",
+			c:    ClassFilters{IEO, ATE, APO},
 			want: "IEO,ATE,APO",
 		},
 	}
@@ -179,7 +179,7 @@ func TestClasses_String(t *testing.T) {
 func TestGroup_String(t *testing.T) {
 	tests := []struct {
 		name string
-		g    SGGroup
+		g    GroupFilter
 		want string
 	}{
 		{
@@ -195,7 +195,7 @@ func TestGroup_String(t *testing.T) {
 		{
 			name: "Out of Range (High)",
 			g:    999,
-			want: "Invalid SGGroup(999)",
+			want: "Invalid GroupFilter(999)",
 		},
 	}
 	for _, tt := range tests {
@@ -210,7 +210,7 @@ func TestGroup_String(t *testing.T) {
 func TestKind_String(t *testing.T) {
 	tests := []struct {
 		name string
-		k    SBKind
+		k    KindFilter
 		want string
 	}{
 		{
@@ -226,7 +226,7 @@ func TestKind_String(t *testing.T) {
 		{
 			name: "Out of Range (High)",
 			k:    999,
-			want: "Invalid SBKind(999)",
+			want: "Invalid KindFilter(999)",
 		},
 	}
 	for _, tt := range tests {
@@ -241,7 +241,7 @@ func TestKind_String(t *testing.T) {
 func TestNumberedStatus_String(t *testing.T) {
 	tests := []struct {
 		name string
-		n    SBNS
+		n    NumStatusFilter
 		want string
 	}{
 		{
@@ -257,7 +257,7 @@ func TestNumberedStatus_String(t *testing.T) {
 		{
 			name: "Out of Range (High)",
 			n:    999,
-			want: "Invalid SBNS(999)",
+			want: "Invalid NumStatusFilter(999)",
 		},
 	}
 	for _, tt := range tests {
@@ -336,25 +336,25 @@ func TestFilter_Values(t *testing.T) {
 			wantErr: false,
 		},
 		{
-			name: "SBClasses - Too Many",
+			name: "ClassFilters - Too Many",
 			fields: Filter{
 				Fields:  NewFieldSet("field"),
-				Classes: SBClasses{IEO, ATE, APO, AMO, MCA, IMB, MBA, OMB, TJN},
+				Classes: ClassFilters{IEO, ATE, APO, AMO, MCA, IMB, MBA, OMB, TJN},
 			},
 			want:    nil,
 			wantErr: true,
 		},
 		{
-			name: "SBClasses - Valid",
+			name: "ClassFilters - Valid",
 			fields: Filter{
 				Fields:  NewFieldSet("field"),
-				Classes: SBClasses{IEO, ATE, APO},
+				Classes: ClassFilters{IEO, ATE, APO},
 			},
 			want:    url.Values{"fields": []string{"field"}, "sb-class": []string{"IEO,ATE,APO"}},
 			wantErr: false,
 		},
 		{
-			name: "Limit, LimitFrom, SBNS, SBKind, SGGroup, MustHaveSatellite, & ExcludeFragments - Valid",
+			name: "Limit, LimitFrom, NumStatusFilter, KindFilter, GroupFilter, MustHaveSatellite, & ExcludeFragments - Valid",
 			fields: Filter{
 				Fields:            NewFieldSet("field"),
 				Limit:             10,

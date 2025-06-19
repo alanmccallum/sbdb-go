@@ -10,15 +10,15 @@ import (
 	"strings"
 )
 
-type SBNS uint
+type NumStatusFilter uint
 
 const (
-	NumStatusAny SBNS = iota
+	NumStatusAny NumStatusFilter = iota
 	NumStatusNumbered
 	NumStatusUnnumbered
 )
 
-func (n SBNS) String() string {
+func (n NumStatusFilter) String() string {
 	switch n {
 	case NumStatusAny:
 		return ""
@@ -27,19 +27,19 @@ func (n SBNS) String() string {
 	case NumStatusUnnumbered:
 		return "u"
 	default:
-		return fmt.Sprintf("Invalid SBNS(%d)", n)
+		return fmt.Sprintf("Invalid NumStatusFilter(%d)", n)
 	}
 }
 
-type SBKind uint
+type KindFilter uint
 
 const (
-	KindAny SBKind = iota
+	KindAny KindFilter = iota
 	KindAsteroid
 	KindComet
 )
 
-func (k SBKind) String() string {
+func (k KindFilter) String() string {
 	switch k {
 	case KindAny:
 		return ""
@@ -48,19 +48,19 @@ func (k SBKind) String() string {
 	case KindComet:
 		return "c"
 	default:
-		return fmt.Sprintf("Invalid SBKind(%d)", k)
+		return fmt.Sprintf("Invalid KindFilter(%d)", k)
 	}
 }
 
-type SGGroup uint
+type GroupFilter uint
 
 const (
-	GroupAny SGGroup = iota
+	GroupAny GroupFilter = iota
 	GroupNEO
 	GroupPHA
 )
 
-func (g SGGroup) String() string {
+func (g GroupFilter) String() string {
 	switch g {
 	case GroupAny:
 		return ""
@@ -69,53 +69,53 @@ func (g SGGroup) String() string {
 	case GroupPHA:
 		return "pha"
 	default:
-		return fmt.Sprintf("Invalid SGGroup(%d)", g)
+		return fmt.Sprintf("Invalid GroupFilter(%d)", g)
 	}
 }
 
-type SBClass uint
-type SBClasses []SBClass
+type ClassFilter uint
+type ClassFilters []ClassFilter
 
 const (
-	IEO SBClass = iota + 1 // Atira
-	ATE                    // Aten
-	APO                    // Apollo
-	AMO                    // Amor
-	MCA                    // Mars-crossing Asteroid
-	IMB                    // Inner Main-belt Asteroid
-	MBA                    // Main-belt Asteroid
-	OMB                    // Outer Main-belt Asteroid
-	TJN                    // Jupiter Trojan
-	AST                    // Asteroid
-	CEN                    // Centaur
-	TNO                    // TransNeptunian Object
-	PAA                    // Parabolic “Asteroid”
-	HYA                    // Hyperbolic “Asteroid”
-	ETc                    // Encke-type Comet
-	JFc                    // Jupiter-family Comet
-	JFC                    // Jupiter-family Comet*
-	CTc                    // Chiron-type Comet
-	HTC                    // Halley-type Comet*
-	PAR                    // Parabolic Comet
-	HYP                    // Hyperbolic Comet
-	COM                    // Comet
+	IEO ClassFilter = iota + 1 // Atira
+	ATE                        // Aten
+	APO                        // Apollo
+	AMO                        // Amor
+	MCA                        // Mars-crossing Asteroid
+	IMB                        // Inner Main-belt Asteroid
+	MBA                        // Main-belt Asteroid
+	OMB                        // Outer Main-belt Asteroid
+	TJN                        // Jupiter Trojan
+	AST                        // Asteroid
+	CEN                        // Centaur
+	TNO                        // TransNeptunian Object
+	PAA                        // Parabolic “Asteroid”
+	HYA                        // Hyperbolic “Asteroid”
+	ETc                        // Encke-type Comet
+	JFc                        // Jupiter-family Comet
+	JFC                        // Jupiter-family Comet*
+	CTc                        // Chiron-type Comet
+	HTC                        // Halley-type Comet*
+	PAR                        // Parabolic Comet
+	HYP                        // Hyperbolic Comet
+	COM                        // Comet
 )
 
-var classCodes = map[SBClass]string{
+var classCodes = map[ClassFilter]string{
 	IEO: "IEO", ATE: "ATE", APO: "APO", AMO: "AMO", MCA: "MCA", IMB: "IMB",
 	MBA: "MBA", OMB: "OMB", TJN: "TJN", AST: "AST", CEN: "CEN", TNO: "TNO",
 	PAA: "PAA", HYA: "HYA", ETc: "ETc", JFc: "JFc", JFC: "JFC", CTc: "CTc",
 	HTC: "HTC", PAR: "PAR", HYP: "HYP", COM: "COM",
 }
 
-func (c SBClass) String() string {
+func (c ClassFilter) String() string {
 	if s, ok := classCodes[c]; ok {
 		return s
 	}
-	return fmt.Sprintf("Invalid SBClass(%d)", c)
+	return fmt.Sprintf("Invalid ClassFilter(%d)", c)
 }
 
-func (c SBClasses) String() string {
+func (c ClassFilters) String() string {
 	parts := make([]string, len(c))
 	for i, class := range c {
 		parts[i] = class.String()
@@ -220,12 +220,12 @@ type Filter struct {
 	Fields         FieldSet
 	Limit          uint
 	LimitFrom      uint
-	NumberedStatus SBNS
-	Kind           SBKind
-	Group          SGGroup
-	// Classes, limit results by up to 3 orbital classes
+	NumberedStatus NumStatusFilter
+	Kind           KindFilter
+	Group          GroupFilter
+	// Classes limits results by up to 3 orbital classes
 	// Refer to orbit class table at https://ssd-api.jpl.nasa.gov/doc/sbdb_filter.html
-	Classes SBClasses
+	Classes ClassFilters
 	// MustHaveSatellite, when true, will filter for bodies with at least one know satellite.
 	MustHaveSatellite bool
 	// ExcludeFragments, when true, will exclude all comet fragments from results.
@@ -238,7 +238,7 @@ func (f Filter) Values() (url.Values, error) {
 		return nil, errors.New("must provide at least one field")
 	}
 	if len(f.Classes) > 3 {
-		return nil, fmt.Errorf("len(SBClasses) = %d, max = 3", len(f.Classes))
+		return nil, fmt.Errorf("len(ClassFilters) = %d, max = 3", len(f.Classes))
 	}
 
 	v := url.Values{}
