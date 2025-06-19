@@ -15,27 +15,37 @@ go get github.com/alanmccallum/sbdb-go
 ## Quickstart
 
 ```go
-c := &sbdb.Client{}
-f := sbdb.Filter{
-    Fields: sbdb.NewFieldSet(sbdb.SpkID, sbdb.FullName),
-    Limit:  1,
-}
-resp, err := c.Get(f)
-if err != nil {
-    log.Fatal(err)
-}
-defer resp.Body.Close()
+package main
 
-p, err := sbdb.Decode(resp.Body)
-if err != nil {
-    log.Fatal(err)
-}
-bodies, err := p.Bodies()
-if err != nil {
-    log.Fatal(err)
-}
+import (
+	"fmt"
+	"log"
 
-fmt.Println(*bodies[0].Identity.FullName)
+	"github.com/alanmccallum/sbdb-go"
+)
+
+func main() {
+	c := &sbdb.Client{}
+	f := sbdb.Filter{
+		Fields: sbdb.NewFieldSet(sbdb.SpkID, sbdb.FullName),
+		Limit:  1,
+	}
+	resp, err := c.Get(f)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer resp.Body.Close()
+
+	p, err := sbdb.Decode(resp.Body)
+	if err != nil {
+		log.Fatal(err)
+	}
+	bodies, err := p.Bodies()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println(*bodies[0].Identity.FullName)
 ```
 
 ## Usage
