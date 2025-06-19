@@ -62,6 +62,14 @@ const (
 	AphelionDist     Field = "ad"        // Aphelion distance (au)
 )
 
+func OrbitFields() []Field {
+	return []Field{
+		OrbitID, Epoch, EpochMJD, EpochCal, Equinox, Eccentricity, SemimajorAxis, PerihelionDist, Inclination, AscNode,
+		PeriapsisArg, MeanAnomaly, PeriapsisTime, PeriapsisTimeCal, OrbitalPeriod, OrbitalPeriodYr, MeanMotion,
+		AphelionDist,
+	}
+}
+
 // Uncertainty field names representing SBDB response fields.
 const (
 	SigmaEcc     Field = "sigma_e"   // 1-sigma uncertainty of eccentricity
@@ -76,6 +84,12 @@ const (
 	SigmaN       Field = "sigma_n"   // 1-sigma uncertainty of mean motion (deg/day)
 	SigmaAD      Field = "sigma_ad"  // 1-sigma uncertainty of aphelion distance (au)
 )
+
+func UncertaintyFields() []Field {
+	return []Field{
+		SigmaEcc, SigmaA, SigmaQ, SigmaI, SigmaAscNode, SigmaPeriArg, SigmaTP, SigmaMA, SigmaPeriod, SigmaN, SigmaAD,
+	}
+}
 
 // Solution field names representing SBDB response fields.
 const (
@@ -95,6 +109,13 @@ const (
 	RMS            Field = "rms"            // RMS residual (arcsec)
 )
 
+func SourceFields() []Field {
+	return []Field{
+		Source, SolutionDate, Producer, DataArc, FirstObs, LastObs, ObsUsed, DelayObsUsed, DopplerObsUsed, TwoBody,
+		PEUsed, SBUsed, ConditionCode, RMS,
+	}
+}
+
 // NonGrav field names representing SBDB response fields.
 const (
 	A1      Field = "A1"       // Non-gravitational acceleration parameter A1 (au/d^2)
@@ -108,6 +129,12 @@ const (
 	DTSigma Field = "DT_sigma" // 1-sigma uncertainty of DT (days)
 	S0Sigma Field = "S0_sigma" // 1-sigma uncertainty of S0
 )
+
+func NonGravFields() []Field {
+	return []Field{
+		A1, A2, A3, DT, S0, A1Sigma, A2Sigma, A3Sigma, DTSigma, S0Sigma,
+	}
+}
 
 // Physical field names representing SBDB response fields.
 const (
@@ -133,6 +160,13 @@ const (
 	SpecB         Field = "spec_B"         // Spectral bin
 	DiameterSigma Field = "diameter_sigma" // 1-sigma uncertainty of diameter (km)
 )
+
+func PhysicalFields() []Field {
+	return []Field{
+		H, G, M1, K1, M2, K2, PC, HSigma, Diameter, Extent, GM, Density, RotPer, Pole, Albedo, BV, UB, IR, SpecT, SpecB,
+		DiameterSigma,
+	}
+}
 
 // Body represents a small-body record from the SBDB Query API.
 type Body struct {
