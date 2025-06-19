@@ -2,8 +2,6 @@ package sbdb
 
 import "strings"
 
-// TODO: Create Field type with stringer
-
 type Field string
 type Fields []Field
 
