@@ -1,7 +1,9 @@
 package sbdb
 
 import (
+	"context"
 	"fmt"
+	"io"
 	"net/http"
 	"net/url"
 )
@@ -20,13 +22,26 @@ type Client struct {
 
 // Get issues a GET request using the provided Filter.
 // The request is sent to Endpoint or Client.Endpoint if set.
-func (c *Client) Get(f Filter) (*http.Response, error) {
+func (c *Client) Get(ctx context.Context, f Filter) (*http.Response, error) {
 	u, err := c.GetURL(f)
 	if err != nil {
 		return nil, err
 	}
 
-	return c.Client.Get(u.String())
+	req, err := http.NewRequestWithContext(ctx, "GET", u.String(), nil)
+
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+		// Optional: Read response body into a string or bytes for debugging
+		defer resp.Body.Close()
+		body, _ := io.ReadAll(resp.Body)
+		return nil, fmt.Errorf("unexpected status %d: %s", resp.StatusCode, string(body))
+	}
+
+	return resp, nil
 }
 
 // GetURL builds a URL for the request represented by the Filter. If

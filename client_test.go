@@ -1,6 +1,7 @@
 package sbdb
 
 import (
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -58,7 +59,7 @@ func TestClient_Get(t *testing.T) {
 		defer srv.Close()
 
 		c := &Client{Endpoint: srv.URL}
-		resp, err := c.Get(Filter{Fields: NewFieldSet(SpkID), Limit: 1})
+		resp, err := c.Get(context.Background(), Filter{Fields: NewFieldSet(SpkID), Limit: 1})
 		if err != nil {
 			t.Fatalf("Get() error = %v", err)
 		}
@@ -77,7 +78,7 @@ func TestClient_Get(t *testing.T) {
 		defer srv.Close()
 
 		c := &Client{Endpoint: srv.URL}
-		if _, err := c.Get(Filter{}); err == nil {
+		if _, err := c.Get(context.Background(), Filter{}); err == nil {
 			t.Fatal("expected error for invalid filter")
 		}
 		if called {
@@ -87,7 +88,7 @@ func TestClient_Get(t *testing.T) {
 
 	t.Run("bad endpoint", func(t *testing.T) {
 		c := &Client{Endpoint: "://bad url"}
-		if _, err := c.Get(Filter{Fields: NewFieldSet(SpkID)}); err == nil {
+		if _, err := c.Get(context.Background(), Filter{Fields: NewFieldSet(SpkID)}); err == nil {
 			t.Fatal("expected error for bad endpoint")
 		}
 	})
