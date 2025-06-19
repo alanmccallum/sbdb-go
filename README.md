@@ -18,6 +18,7 @@ go get github.com/alanmccallum/sbdb-go
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 
@@ -30,7 +31,7 @@ func main() {
 		Fields: sbdb.NewFieldSet(sbdb.SpkID, sbdb.FullName),
 		Limit:  1,
 	}
-	resp, err := c.Get(f)
+	resp, err := c.Get(context.Background(), f)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -46,6 +47,8 @@ func main() {
 	}
 
 	fmt.Println(*bodies[0].Identity.FullName)
+}
+
 ```
 
 ## Usage
