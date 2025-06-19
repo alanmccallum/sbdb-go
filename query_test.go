@@ -336,23 +336,6 @@ func TestFilter_Values(t *testing.T) {
 			wantErr: false,
 		},
 		{
-			name: "Sort - Too many",
-			fields: Filter{
-				Fields: NewFieldSet("field"),
-				Sort:   Fields{"field1", "field2", "field3", "field4", "field5", "field6"},
-			},
-			want:    nil,
-			wantErr: true,
-		},
-		{
-			name: "Sort - Valid",
-			fields: Filter{
-				Fields: NewFieldSet("field"),
-				Sort:   Fields{"field1", "field2", "field3"}},
-			want:    url.Values{"fields": []string{"field"}, "sort": []string{"field1,field2,field3"}},
-			wantErr: false,
-		},
-		{
 			name: "SBClasses - Too Many",
 			fields: Filter{
 				Fields:  NewFieldSet("field"),
@@ -410,7 +393,6 @@ func TestFilter_Values(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			f := Filter{
 				Fields:            tt.fields.Fields,
-				Sort:              tt.fields.Sort,
 				Limit:             tt.fields.Limit,
 				LimitFrom:         tt.fields.LimitFrom,
 				NumberedStatus:    tt.fields.NumberedStatus,
