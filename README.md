@@ -1,3 +1,9 @@
+[![Go Reference](https://pkg.go.dev/badge/github.com/alanmccallum/sbdb-go.svg)](https://pkg.go.dev/github.com/alanmccallum/sbdb-go)
+[![Go](https://github.com/alanmccallum/sbdb-go/actions/workflows/go.yml/badge.svg)](https://github.com/alanmccallum/sbdb-go/actions/workflows/go.yml)
+[![Go Report Card](https://goreportcard.com/badge/github.com/alanmccallum/sbdb-go)](https://goreportcard.com/report/github.com/alanmccallum/sbdb-go)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
+
 sbdb-go is a Go library for interacting with NASA JPL's Small-Body Database (SBDB) Query API. It provides a query builder and decoders so you can inspect results programmatically.
 
 ### Features
