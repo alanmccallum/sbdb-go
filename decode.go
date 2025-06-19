@@ -87,7 +87,7 @@ func (r Record) identity() Identity {
 		SpkID:       r.getInt(SpkID),
 		FullName:    r.getString(FullName),
 		Kind:        r.getString(Kind),
-		PDES:        r.getString(PDES),
+		PDES:        r.getString(PDes),
 		Name:        r.getString(Name),
 		Prefix:      r.getString(Prefix),
 		Class:       r.getString(Class),

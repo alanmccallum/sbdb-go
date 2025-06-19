@@ -1,27 +1,19 @@
 package sbdb
 
-import "strings"
-
+// Field represents a SBDB Field, used to build queries and to process responses.
 type Field string
-type Fields []Field
 
+// String returns the string representation of the Field
 func (f Field) String() string {
 	return string(f)
 }
-func (f Fields) String() string {
-	var s = make([]string, len(f))
-	for i, field := range f {
-		s[i] = field.String()
-	}
-	return strings.Join(s, ",")
-}
 
-// Identity field names representing SBDB response fields.
+// SBDB field names representing identity response fields.
 const (
 	SpkID       Field = "spkid"     // SPICE identifier for the body
 	FullName    Field = "full_name" // Complete object designation
 	Kind        Field = "kind"      // Body kind, e.g. asteroid or comet
-	PDES        Field = "pdes"      // Primary designation
+	PDes        Field = "pdes"      // Primary designation
 	Name        Field = "name"      // IAU name
 	Prefix      Field = "prefix"    // Numbered prefix
 	Class       Field = "class"     // Dynamical class
@@ -34,13 +26,14 @@ const (
 	MOIDJupiter Field = "moid_jup"  // Jupiter MOID (au)
 )
 
+// IdentityFields returns all fields from Identity
 func IdentityFields() []Field {
 	return []Field{
-		SpkID, FullName, Kind, PDES, Name, Prefix, Class, NEO, PHA, Sats, TJupiter, MOID, MOIDLD, MOIDJupiter,
+		SpkID, FullName, Kind, PDes, Name, Prefix, Class, NEO, PHA, Sats, TJupiter, MOID, MOIDLD, MOIDJupiter,
 	}
 }
 
-// Orbit field names representing SBDB response fields.
+// SBDB field names representing orbit response fields.
 const (
 	OrbitID          Field = "orbit_id"  // Orbit solution identifier
 	Epoch            Field = "epoch"     // Reference epoch (JD)
@@ -62,6 +55,7 @@ const (
 	AphelionDist     Field = "ad"        // Aphelion distance (au)
 )
 
+// OrbitFields returns all fields from Orbit
 func OrbitFields() []Field {
 	return []Field{
 		OrbitID, Epoch, EpochMJD, EpochCal, Equinox, Eccentricity, SemimajorAxis, PerihelionDist, Inclination, AscNode,
@@ -70,7 +64,7 @@ func OrbitFields() []Field {
 	}
 }
 
-// Uncertainty field names representing SBDB response fields.
+// SBDB field names representing uncertainty response fields.
 const (
 	SigmaEcc     Field = "sigma_e"   // 1-sigma uncertainty of eccentricity
 	SigmaA       Field = "sigma_a"   // 1-sigma uncertainty of semi-major axis (au)
@@ -85,13 +79,14 @@ const (
 	SigmaAD      Field = "sigma_ad"  // 1-sigma uncertainty of aphelion distance (au)
 )
 
+// UncertaintyFields returns all fields from Uncertainty
 func UncertaintyFields() []Field {
 	return []Field{
 		SigmaEcc, SigmaA, SigmaQ, SigmaI, SigmaAscNode, SigmaPeriArg, SigmaTP, SigmaMA, SigmaPeriod, SigmaN, SigmaAD,
 	}
 }
 
-// Solution field names representing SBDB response fields.
+// SBDB field names representing solution response fields.
 const (
 	Source         Field = "source"         // Source of orbit solution
 	SolutionDate   Field = "soln_date"      // Solution date
@@ -109,6 +104,7 @@ const (
 	RMS            Field = "rms"            // RMS residual (arcsec)
 )
 
+// SourceFields returns all fields from Source
 func SourceFields() []Field {
 	return []Field{
 		Source, SolutionDate, Producer, DataArc, FirstObs, LastObs, ObsUsed, DelayObsUsed, DopplerObsUsed, TwoBody,
@@ -116,7 +112,7 @@ func SourceFields() []Field {
 	}
 }
 
-// NonGrav field names representing SBDB response fields.
+// SBDB field names representing non-gravitational response fields.
 const (
 	A1      Field = "A1"       // Non-gravitational acceleration parameter A1 (au/d^2)
 	A2      Field = "A2"       // Non-gravitational acceleration parameter A2 (au/d^2)
@@ -130,13 +126,14 @@ const (
 	S0Sigma Field = "S0_sigma" // 1-sigma uncertainty of S0
 )
 
+// NonGravFields returns all fields from NonGrav
 func NonGravFields() []Field {
 	return []Field{
 		A1, A2, A3, DT, S0, A1Sigma, A2Sigma, A3Sigma, DTSigma, S0Sigma,
 	}
 }
 
-// Physical field names representing SBDB response fields.
+// Field names representing SBDB physical properties response fields.
 const (
 	H             Field = "H"              // Absolute magnitude H
 	G             Field = "G"              // Photometric slope parameter G
@@ -161,6 +158,7 @@ const (
 	DiameterSigma Field = "diameter_sigma" // 1-sigma uncertainty of diameter (km)
 )
 
+// PhysicalFields returns all fields from Physical
 func PhysicalFields() []Field {
 	return []Field{
 		H, G, M1, K1, M2, K2, PC, HSigma, Diameter, Extent, GM, Density, RotPer, Pole, Albedo, BV, UB, IR, SpecT, SpecB,

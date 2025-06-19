@@ -196,7 +196,7 @@ func NewFieldSet(fields ...Field) FieldSet {
 func (fs FieldSet) Add(field Field) {
 	fs[field.String()] = struct{}{}
 }
-func (fs FieldSet) AddFields(fields Fields) {
+func (fs FieldSet) AddFields(fields []Field) {
 	for _, f := range fields {
 		fs.Add(f)
 	}
