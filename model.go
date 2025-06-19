@@ -104,8 +104,8 @@ const (
 	RMS            Field = "rms"            // RMS residual (arcsec)
 )
 
-// SourceFields returns all fields from Source
-func SourceFields() []Field {
+// SolutionFields returns all fields from Source
+func SolutionFields() []Field {
 	return []Field{
 		Source, SolutionDate, Producer, DataArc, FirstObs, LastObs, ObsUsed, DelayObsUsed, DopplerObsUsed, TwoBody,
 		PEUsed, SBUsed, ConditionCode, RMS,
