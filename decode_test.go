@@ -11,7 +11,7 @@ import (
 )
 
 func TestMain(m *testing.M) {
-	log = slog.New(slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{Level: slog.LevelDebug}))
+	SetLogger(slog.New(slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{Level: slog.LevelDebug})))
 	os.Exit(m.Run())
 }
 
