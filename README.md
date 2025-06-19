@@ -61,6 +61,23 @@ Constants such as `sbdb.SpkID`, `sbdb.NEO`, and others mirror the field names us
 
 For additional examples see the package documentation on [pkg.go.dev](https://pkg.go.dev/github.com/alanmccallum/sbdb-go).
 
+## Debug Logging
+
+`sbdb-go` uses Go's `slog` package for optional debug output of type conversions. Replace the
+package logger using `SetLogger` to enable these messages. The tests show an
+example of configuring a text logger at the debug level in
+[`decode_test.go`](decode_test.go):
+
+```go
+func TestMain(m *testing.M) {
+    SetLogger(slog.New(slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{
+        Level: slog.LevelDebug,
+    })))
+    os.Exit(m.Run())
+}
+```
+
+
 ## Data Source
 
 This project uses publicly available data from NASA JPL's Small-Body Database API. Data is provided by the [Jet Propulsion Laboratory](https://ssd-api.jpl.nasa.gov/) under U.S. Government public domain.
