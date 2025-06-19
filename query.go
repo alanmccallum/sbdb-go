@@ -196,6 +196,11 @@ func NewFieldSet(fields ...Field) FieldSet {
 func (fs FieldSet) Add(field Field) {
 	fs[field.String()] = struct{}{}
 }
+func (fs FieldSet) AddFields(fields Fields) {
+	for _, f := range fields {
+		fs.Add(f)
+	}
+}
 func (fs FieldSet) Remove(field Field) {
 	delete(fs, field.String())
 }
@@ -211,21 +216,14 @@ func (fs FieldSet) String() string {
 	return strings.Join(fs.List(), ",")
 }
 
-func (fs FieldSet) AddIdentityFields() {
-	for _, f := range IdentityFields() {
-		fs.Add(f)
-	}
-}
-
 type Filter struct {
 	Fields         FieldSet
-	Sort           Fields
 	Limit          uint
 	LimitFrom      uint
 	NumberedStatus SBNS
 	Kind           SBKind
 	Group          SGGroup
-	// SBClass, limit results by up to 3 orbital classes
+	// Classes, limit results by up to 3 orbital classes
 	// Refer to orbit class table at https://ssd-api.jpl.nasa.gov/doc/sbdb_filter.html
 	Classes SBClasses
 	// MustHaveSatellite, when true, will filter for bodies with at least one know satellite.
@@ -239,18 +237,12 @@ func (f Filter) Values() (url.Values, error) {
 	if f.Fields == nil || len(f.Fields) <= 0 {
 		return nil, errors.New("must provide at least one field")
 	}
-	if len(f.Sort) > 3 {
-		return nil, fmt.Errorf("len(Sort) = %d, max = 3", len(f.Sort))
-	}
 	if len(f.Classes) > 3 {
 		return nil, fmt.Errorf("len(SBClasses) = %d, max = 3", len(f.Classes))
 	}
 
 	v := url.Values{}
 	v.Set("fields", f.Fields.String())
-	if len(f.Sort) > 0 {
-		v.Set("sort", f.Sort.String())
-	}
 	if f.Limit > 0 {
 		v.Set("limit", strconv.FormatUint(uint64(f.Limit), 10))
 	}
