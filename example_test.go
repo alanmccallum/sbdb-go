@@ -33,3 +33,35 @@ func ExamplePayload_Records() {
 	// 555
 	// Y
 }
+
+func ExampleClient_GetURL() {
+	c := &sbdb.Client{}
+	f := sbdb.Filter{
+		Fields: sbdb.NewFieldSet(sbdb.SpkID, sbdb.FullName),
+		Limit:  1,
+	}
+	u, err := c.GetURL(f)
+	if err != nil {
+		fmt.Println("error:", err)
+		return
+	}
+	fmt.Println(u.String())
+	// Output:
+	// https://ssd-api.jpl.nasa.gov/sbdb_query.api?fields=full_name%2Cspkid&limit=1
+}
+
+func ExampleFilter_Values() {
+	f := sbdb.Filter{
+		Fields: sbdb.NewFieldSet(sbdb.SpkID, sbdb.FullName),
+		Limit:  5,
+		Kind:   sbdb.KindAsteroid,
+	}
+	v, err := f.Values()
+	if err != nil {
+		fmt.Println("error:", err)
+		return
+	}
+	fmt.Println(v.Encode())
+	// Output:
+	// fields=full_name%2Cspkid&limit=5&sb-kind=a
+}
