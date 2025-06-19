@@ -6,16 +6,9 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"log/slog"
 	"strconv"
 	"strings"
 )
-
-var log = slog.Default()
-
-func logFailedTypeAssert(fn, field Field, value any) {
-	log.Debug("Type assertion failed", "fn", fn, "field", field, "value", value)
-}
 
 // Decode parses an SBDB JSON payload from r.
 // A json.Decoder is used with UseNumber so numeric fields are decoded as
